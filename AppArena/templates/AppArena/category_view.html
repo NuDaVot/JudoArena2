@@ -1,0 +1,55 @@
+{% extends 'AppArena/base.html' %}
+{% block content %}
+
+    <ul style="">
+        {% for c in request.user.groups.all %}
+
+            {% if c.name == "referee" or c.name == "trainer" %}
+                {% for application in applications %}
+                    <p class="btn-submit navig">Номер заявки: {{ application.id }}</p>
+                    <p>Имя: {{ application.id_participant.first_name }}</p>
+                    <p>Фамилия: {{ application.id_participant.last_name }}</p>
+                    <p>Отчество: {{ application.id_participant.expansionuser.patronymic }}</p>
+                    <p>Вес: {{ application.id_participant.expansionuser.weight_participants }}</p>
+                    <p>Дата рождения: {{ application.id_participant.expansionuser.date_birth_participants }}</p>
+                    <p style="margin-bottom: 50px">Статус заявки: {{ application.status_application }}</p>
+
+                    {% for c in role %}
+                        {% if c.name == "judge" %}
+                            {% if application.status_application %}
+                                <form action="{% url 'reject_application' application.id %}" method="post" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-reject">Отклонить</button>
+                                </form>
+                            {% else %}
+                                <form action="{% url 'approve_application' application.id %}" method="post" class="inline-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-approve">Одобрить</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                {% for application in applications %}
+                    {% if application.id_participant.pk == request.user.pk %}
+                        <p>Номер заявки: {{ application.id }}</p>
+                        <p>Имя: {{ application.id_participant.first_name }}</p>
+                        <p>Фамилия: {{ application.id_participant.last_name }}</p>
+                        <p>Отчество: {{ application.id_participant.expansionuser.patronymic }}</p>
+                        <p>Вес: {{ application.id_participant.expansionuser.weight_participants }}</p>
+                        <p>Дата рождения: {{ application.id_participant.expansionuser.date_birth_participants }}</p>
+                        <p>Статус заявки: {{ application.status_application }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <a href="{% url 'show_competitions' %}" class="btn-back">К списку соревнований</a>
+    <a href="{% url 'competition' comp_slug %}" class="btn-back">Назад к соревнованию</a>
+    {% for c in role %}
+        {% if c.name == "trainer"%}
+            <a href="{% url 'suitable_participants' category_slug=category_slug %}" class="btn-apply">Подать заявку</a>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

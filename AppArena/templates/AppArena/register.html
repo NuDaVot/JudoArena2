@@ -1,0 +1,168 @@
+{% extends 'AppArena/base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+
+
+        <div class="container_w500">
+            {#  Пароль логин #}
+            <div class="container_fsb">
+                {# username #}
+                <div>
+                    <p class="name_hint" >{{ form.username.label }}</p>
+                    <div class="input_form">
+                        {{ form.username }}
+                        <ul style="padding: 0" class="errorlist">{{ form.username.errors }}</ul>
+                    </div>
+                </div>
+            </div>
+            {# Отчество #}
+            <div class="container_fsb">
+                {# password1 #}
+                <div>
+                    <p class="name_hint" >{{ form.password1.label }}</p>
+                    <div class="input_form">
+                        {{ form.password1 }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.password1.errors }}</ul>
+                </div>
+                {# password2 #}
+                <div>
+                    <p class="name_hint" >{{ form.password2.label }}</p>
+                    <div class="input_form">
+                        {{ form.password2 }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.password2.errors }}</ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container_w500">
+            {#  Фамилия Имя #}
+            <div class="container_fsb">
+                {# last_name #}
+                <div>
+                    <p class="name_hint" >{{ form.last_name.label }}</p>
+                    <div class="input_form">
+                        {{ form.last_name }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.last_name.errors }} </ul>
+{#                    <p class="errors">Тест ошибки</p>#}
+                </div>
+                {# first_name #}
+                <div>
+                    <p class="name_hint" >{{ form.first_name.label }}</p>
+                    <div class="input_form">
+                        {{ form.first_name }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.first_name.errors }}</ul>
+                </div>
+
+            </div>
+            {# Отчество #}
+            <div class="container_fsb">
+                {# patronymic #}
+                <div>
+                    <p class="name_hint" >{{ form.patronymic.label }}</p>
+                    <div class="input_form">
+                        {{ form.patronymic }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.patronymic.errors }}</ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container_w500">
+            <div  class="container_fsb">
+                {# role  #}
+                <div>
+                    {# role #}
+                    <div>
+                        <p class="name_hint" >{{ form.role.label }}</p>
+                        <div class="input_form">
+                            {{ form.role }}
+                        </div>
+                        <ul style="padding: 0" class="errorlist">{{ form.role.errors }}</ul>
+                    </div>
+                </div>
+                {#  Разные данные #}
+                <div>
+                    {# weight_participants #}
+                    <div id="id_weight_participants_div">
+                        <p class="name_hint" >{{ form.weight_participants.label }}</p>
+                        <div class="input_form">
+                            {{ form.weight_participants }}
+                        </div>
+                        <ul style="padding: 0" class="errorlist">{{ form.weight_participants.errors }}</ul>
+                    </div>
+                    {# date_birth_participants #}
+                    <div id="id_date_birth_participants_div">
+                        <p class="name_hint" >{{ form.date_birth_participants.label }}</p>
+                        <div class="input_form">
+                            {{ form.date_birth_participants }}
+                        </div>
+                        <ul style="padding: 0" class="errorlist">{{ form.date_birth_participants.errors }}</ul>
+                    </div>
+                    {# medical_insurance_participants #}
+                    <div id="id_medical_insurance_participants_div">
+                        <p class="name_hint" >{{ form.medical_insurance_participants.label }}</p>
+                        <div class="input_form">
+                            {{ form.medical_insurance_participants }}
+                        </div>
+                        <ul style="padding: 0" class="errorlist">{{ form.medical_insurance_participants.errors }}</ul>
+                    </div>
+                    {# license_number_trainer #}
+                    <div id="id_license_number_trainer_div">
+                        <p class="name_hint" >{{ form.license_number_trainer.label }}</p>
+                        <div class="input_form">
+                            {{ form.license_number_trainer }}
+                        </div>
+                        <ul style="padding: 0" class="errorlist">{{ form.license_number_trainer.errors }}</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container_w500">
+            <div class="container_fsb">
+                <button type="submit" class="btn-submit btn-content" style="margin-left: 22px">{{ name_btn }}</button>
+                <a href="{% url 'login' %}" class="btn-submit navig btn-content">На вход</a>
+            </div>
+            <ul  class="errorlist" style="margin-top: 10px; padding: 0">{{ form.not_field_errors }}</ul>
+        </div>
+    </form>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            if ($('#id_role').val() !== '1') {
+                $('#id_license_number_trainer_div').show();
+                $('#id_weight_participants_div').hide();
+                $('#id_date_birth_participants_div').hide();
+                $('#id_medical_insurance_participants_div').hide();
+            } else {
+                $('#id_license_number_trainer_div').hide();
+                $('#id_weight_participants_div').show();
+                $('#id_medical_insurance_participants_div').show();
+                $('#id_date_birth_participants_div').show();
+            }
+
+            $('#id_role').change(function() {
+                if ($(this).val() !== '1') {
+                    $('#id_license_number_trainer_div').show();
+                    $('#id_weight_participants_div').hide();
+                    $('#id_date_birth_participants_div').hide();
+                    $('#id_medical_insurance_participants_div').hide();
+                } else {
+                    $('#id_license_number_trainer_div').hide();
+                    $('#id_weight_participants_div').show();
+                    $('#id_medical_insurance_participants_div').show();
+                    $('#id_date_birth_participants_div').show();
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link type="text/css" href="{% static 'AppArena/css/style.css' %}" rel="stylesheet">
+
+<body>
+    <header>
+        {% if request.user.is_authenticated %}
+        <nav class="container_fsb">
+            <div class="container_faic">
+                {% for c in request.user.groups.all %}
+                    {% if c.name == "referee" %}
+                        {% for item in menu %}
+                            <a href="{% url item.url_name %} " class="btn-submit navig">{{item.title}}</a>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="container_faic">
+                <a href="{% url 'profile'  user.pk %}" class="btn-submit navig btn-content" >{{ user.last_name }}
+                 {{ user.first_name|slice:":1" }}.{{ user.expansionuser.patronymic|slice:":1" }}.</a>
+                <a href="{% url 'sign_out' %} " class="btn-submit navig">Выйти</a>
+            </div>
+
+        </nav>
+        {% endif %}
+    </header>
+
+
+    <h2 class="page_title">{{ title }}</h2>
+
+    {% block content %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+</body>
+</html>

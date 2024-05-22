@@ -1,0 +1,35 @@
+{% extends 'AppArena/base.html' %}
+{% block content %}
+    <div class="container_w500">
+        <p>Адрес соревнования: {{ comp.address }}</p>
+        <p>Дата соревнования: {{ comp.date_event }}</p>
+        <p>Организатор соревнования: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
+            {{ comp.organizer.expansionuser.patronymic|slice:":1" }}.</p>
+        <h3>Категории соревнования:</h3>
+
+        <ul>
+            {% for category in categories %}
+                <li style="margin-bottom: 50px"><a class="btn-submit navig "  href="{% url 'category' comp.slug category.slug %}" >Вес до: {{ category.id_weight.weight_end|floatformat:"0" }} кг. Возраст:
+                    {% if category.id_age.age_start|date:"Y" == category.id_age.age_end|date:"Y" %}
+                        {{ category.id_age.age_start|date:"Y" }}
+                    {% else %}
+                        {{ category.id_age.age_start|date:"Y" }} - {{ category.id_age.age_end|date:"Y" }}
+                    {% endif %}
+                </a></li>
+            {% endfor %}
+        </ul>
+        {% if r.name == "referee" and c.organizer.username == request.user.username %}
+         <form action="{% url 'delete_competition' comp.slug %}" method="post" >
+                        {% csrf_token %}
+                        {% if comp.status_competition %}
+                        <button type="submit" class="btn-submit " style="margin-left: 0px" >Отменить соревнование</button>
+                        {% else %}
+
+                        <button type="submit" class="btn-submit navig" style="margin-left: 0px" >Вернуть соревнование</button>
+
+                        {% endif %}
+         </form>
+        {% endif%}
+        <a href="{% url 'show_competitions' %}" class="btn-submit">К списку соревнований</a>
+    </div>
+{% endblock %}

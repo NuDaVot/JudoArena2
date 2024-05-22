@@ -1,0 +1,39 @@
+{% extends 'AppArena/base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+
+
+        <div class="container_w500">
+            {#  Пароль логин #}
+            <div class="container_fsb">
+                {# username #}
+                <div>
+                    <p class="name_hint" >Логин</p>
+                    <div class="input_form">
+                        {{ form.username }}
+                        <ul style="padding: 0" class="errorlist">{{ form.username.errors }}</ul>
+                    </div>
+                </div>
+                {# password1 #}
+                <div>
+                    <p class="name_hint" >{{ form.password.label }}</p>
+                    <div class="input_form">
+                        {{ form.password }}
+                    </div>
+                    <ul style="padding: 0" class="errorlist">{{ form.password.errors }}</ul>
+                </div>
+            </div>
+            <ul  class="errorlist" style="margin-top: 10px; padding: 0">{{ form.non_field_errors }}</ul>
+        </div>
+        <div class="container_w500">
+            <div class="container_fsb">
+                <button type="submit" class="btn-submit btn-content" style="margin-left: 22px">Войти</button>
+                <a href="{% url 'sign_un' %}" class="btn-submit navig btn-content">На регистрацию</a>
+            </div>
+
+        </div>
+    </form>
+
+{% endblock %}
