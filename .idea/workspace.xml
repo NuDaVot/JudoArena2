@@ -4,7 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1ca1208-80be-4cbf-9776-3f169c85eeee" name="Changes" comment="" />
+    <list default="true" id="c1ca1208-80be-4cbf-9776-3f169c85eeee" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AppArena/static/AppArena/css/style2.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AppArena/static/AppArena/image/FullLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AppArena/static/AppArena/image/logo2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/create_category.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AppArena/templatetags/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AppArena/templatetags/custom_filters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/JudoArena2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/JudoArena2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/static/AppArena/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/static/AppArena/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/add_competition.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/add_competition.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/choose_judges.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/choose_judges.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/competition_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/competition_view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/competitions.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/competitions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/edit_profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/edit_profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,31 +64,59 @@
   "keyToString": {
     "DefaultHtmlFileTemplate": "HTML File",
     "Django Server.JudoArena2.executor": "Debug",
+    "Python.forms.executor": "Debug",
+    "Python.manage.executor": "Debug",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/nudan/PycharmProjects/JudoArena2",
+    "last_opened_file_path": "C:/Users/nudan/PycharmProjects/demo",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "Settings.Markdown",
     "two.files.diff.last.used.file": "C:/Users/nudan/PycharmProjects/JudoArena2/AppArena/static/AppArena/css/style.css",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\static\AppArena\image" />
       <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\templates\AppArena" />
       <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\templatetags" />
+      <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\templates" />
       <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\static\AppArena" />
       <recent name="C:\Users\nudan\PycharmProjects\JudoArena2\AppArena\static" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.manage">
+    <configuration name="manage" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="JudoArena2" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="runserver" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="JudoArena2" type="Python.DjangoServer" factoryName="Django server">
       <module name="JudoArena2" />
       <option name="ENV_FILES" value="" />
@@ -91,6 +142,14 @@
       <option name="customRunCommand" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.manage" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.manage" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -117,5 +176,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

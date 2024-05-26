@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django import forms
+from django.contrib.auth.models import User, Group
 from datetime import timedelta
 
 from .models import *
@@ -22,7 +23,7 @@ class SignUpForm(UserCreationForm):
 
     license_number_trainer = forms.CharField(label='Лицензия', max_length=10, widget=forms.TextInput(), required=False)
 
-    medical_insurance_participants = forms.CharField(label='Страховка', max_length=10, widget=forms.TextInput(),
+    medical_insurance_participants = forms.CharField(label='Номер страхования жизни', max_length=10, widget=forms.TextInput(),
                                                      required=False)
     weight_participants = forms.DecimalField(label='Вес', max_digits=6, decimal_places=3, widget=forms.NumberInput(),
                                              required=False)
@@ -122,10 +123,12 @@ class AddCompetitionForm(forms.ModelForm):
 
     class Meta:
         model = Competition
-        fields = ['name_competition', 'date_event', 'address']
+        fields = ['name_competition', 'date_event', 'address', 'description','date_end']
         widgets = {
+            'description': forms.Textarea(attrs={'class': 'textarea_class'}),
             'address': forms.Textarea(attrs={'class': 'textarea_class'}),
             'date_event': forms.DateInput(attrs={'type': 'date'}),
+            'date_end': forms.DateInput(attrs={'type': 'date'}),
             'name_competition': forms.Textarea(attrs={'class': 'textarea_class'}),
 
         }
@@ -137,30 +140,85 @@ class AddCompetitionForm(forms.ModelForm):
         if date_event and date_event < timezone.now().date():
             self.add_error('date_event', "Не верная дата")
 
+        date_end = cleaned_data.get('date_end')
+
+        if date_end and date_end < timezone.now().date():
+            self.add_error('date_end', "Не верная дата")
+
 
 class ProfileForm(forms.ModelForm):
-
 
     class Meta:
         model = User
         fields = ['username', 'last_name', 'first_name']
 
-    def save(self, commit=True):
-        user = super().save(commit=True)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.save()
+
+class ProfileExpansionForm(forms.ModelForm):
+
+    class Meta:
+        model = ExpansionUser
+        fields = ['patronymic', 'medical_insurance_participants',
+                  'weight_participants']
 
 
 class JudgesForm(forms.Form):
-    judges = forms.ModelMultipleChoiceField(queryset=User.objects.all(), widget=forms.CheckboxSelectMultiple)
+
+    judges = forms.ModelMultipleChoiceField(
+        queryset=ExpansionUser.objects.select_related('user').all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Добавить судью'
+    )
+    existing_judges = forms.ModelMultipleChoiceField(
+        queryset=ExpansionUser.objects.select_related('user').all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Исключить судью'
+    )
 
     def __init__(self, *args, **kwargs):
+        competition = kwargs.pop('competition', None)
         super().__init__(*args, **kwargs)
-        self.fields['judges'].queryset = User.objects.filter(is_staff=True)
 
-    def save(self, commit=True):
-        judges = self.cleaned_data['judges']
-        for judge in judges:
-            CompetitorReferee.objects.create(referee=judge)
-        return judges
+        judges_group = Group.objects.get(name="Судья")
+        all_judges = User.objects.filter(groups=judges_group)
+        expansion_users = ExpansionUser.objects.filter(user__in=all_judges)
+
+        if competition:
+            existing_judges_qs = User.objects.filter(competitorreferee__competition_id=competition)
+            existing_expansion_users_qs = ExpansionUser.objects.filter(user__in=existing_judges_qs)
+            self.fields['existing_judges'].queryset = existing_expansion_users_qs
+            self.fields['judges'].queryset = expansion_users.exclude(user__in=existing_judges_qs)
+        else:
+            self.fields['judges'].queryset = expansion_users
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['id_weight', 'id_age']
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryForm, self).__init__(*args, **kwargs)
+        self.fields['id_age'].queryset = Age.objects.all()
+        self.fields['id_weight'].queryset = Weight.objects.all()
+
+
+class AgeForm(forms.ModelForm):
+    class Meta:
+        model = Age
+        fields = ['age_start', 'age_end']
+        widgets = {
+            'age_start': forms.DateInput(attrs={'type': 'date'}),
+            'age_end': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class WeightForm(forms.ModelForm):
+    class Meta:
+        model = Weight
+        fields = ['weight_start', 'weight_end']
+        widgets = {
+            'age_start': forms.NumberInput(),
+            'age_end': forms.NumberInput(),
+        }

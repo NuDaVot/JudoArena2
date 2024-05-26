@@ -9,7 +9,7 @@
 
         <ul>
             {% for category in categories %}
-                <li style="margin-bottom: 50px"><a class="btn-submit navig "  href="{% url 'category' comp.slug category.slug %}" >Вес до: {{ category.id_weight.weight_end|floatformat:"0" }} кг. Возраст:
+                <li style="margin-bottom: 50px"><a class="btn-submit navig "  href="{% url 'category' comp.slug category.pk %}" >Вес до: {{ category.id_weight.weight_end|floatformat:"0" }} кг. Возраст:
                     {% if category.id_age.age_start|date:"Y" == category.id_age.age_end|date:"Y" %}
                         {{ category.id_age.age_start|date:"Y" }}
                     {% else %}
@@ -31,5 +31,11 @@
          </form>
         {% endif%}
         <a href="{% url 'show_competitions' %}" class="btn-submit">К списку соревнований</a>
+         {% for c in request.user.groups.all %}
+            {% if c.name == "Секретарь" %}
+                <a href="{% url 'choose_judges' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Судьи</a>
+                <a href="{% url 'create_category' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Добавить категорию</a>
+            {% endif %}
+        {% endfor %}
     </div>
 {% endblock %}

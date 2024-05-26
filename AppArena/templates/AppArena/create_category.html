@@ -1,0 +1,32 @@
+<!-- create_category.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Category</title>
+</head>
+<body>
+    <h1>Create Category</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ category_form.as_p }}
+        <button type="submit">Create Category</button>
+    </form>
+
+    <h2>Add Age</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ age_form.as_p }}
+        <button type="submit" name="add_age">Add Age</button>
+    </form>
+
+    <h2>Add Weight</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ weight_form.as_p }}
+        <button type="submit" name="add_weight">Add Weight</button>
+    </form>
+    <p >{{error_message}}</p>
+    <p >{{message}}</p>
+    <a href="{% url 'competition' comp.slug %}" class="btn-submit navig " >К соревнованию</a>
+</body>
+</html>

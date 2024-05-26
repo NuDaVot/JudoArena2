@@ -2,41 +2,51 @@
 {% block content %}
     <form action="{% url 'add_competition' %}" method="post" enctype="multipart/form-data" >
         {% csrf_token %}
-
-
-
-
-         <div class="container_w500">
-             <div class="container_fsb" style="margin-left: -90px;">
-                  <div >
-                        <p class="name_hint" >{{ form.name_competition.label }}</p>
-                        <div >
-                            {{ form.name_competition }}
-                            <ul style="padding: 0" class="errorlist">{{ form.name_competition.errors }}</ul>
-                        </div>
-                 </div>
-                 <div >
-                     <p class="name_hint" >{{ form.address.label }}</p>
+        <div class="container_big2">
+            <div class="card-container">
+                <div>
+                    <p class="name_hint" >{{ form.name_competition.label }}</p>
+                    <div >
+                        {{ form.name_competition }}
+                        <ul  class="errorlist">{{ form.name_competition.errors }}</ul>
+                    </div>
+                </div>
+                <div>
+                    <p class="name_hint" >{{ form.address.label }}</p>
                     <div >
                         {{ form.address }}
                     </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.address.errors }}</ul>
+                    <ul class="errorlist">{{ form.address.errors }}</ul>
                 </div>
-             </div>
-            <div class="container_fsb">
-                <div style="margin-left: -45px;">
+                <div>
+                   <p class="name_hint" >{{ form.description.label }}</p>
+                    <div >
+                        {{ form.description }}
+                    </div>
+                    <ul class="errorlist">{{ form.description.errors }}</ul>
+               </div>
+            </div>
+        </div>
+        <div class="container_big">
+            <div class="card-container">
+                <div>
                      <p class="name_hint" >{{ form.date_event.label }}</p>
                      <div class="input_form">
                          {{ form.date_event }}
                      </div>
-                     <ul style="padding: 0" class="errorlist">{{ form.date_event.errors }}</ul>
-                 </div>
-
-                <div style="margin-top: 34px; width: 250px;">
-                    <button type="submit" class="btn-submit btn-content " style="margin-left: 35px">Добавить</button>
+                     <ul class="errorlist">{{ form.date_event.errors }}</ul>
+                </div>
+                <div>
+                     <p class="name_hint" >{{ form.date_end.label }}</p>
+                     <div class="input_form">
+                         {{ form.date_end }}
+                     </div>
+                     <ul class="errorlist">{{ form.date_end.errors }}</ul>
+                </div>
+                <div class="btn_container">
+                    <button type="submit" class="btn-submit " >Добавить</button>
                 </div>
             </div>
-
         </div>
     </form>
 {% endblock %}

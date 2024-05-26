@@ -3,84 +3,64 @@
 {% block content %}
     <form method="post">
         {% csrf_token %}
-
-
-        <div class="container_w500">
-            {#  Пароль логин #}
-            <div class="container_fsb">
-                {# username #}
-                <div>
-                    <p class="name_hint" >{{ form.username.label }}</p>
-                    <div class="input_form">
-                        {{ form.username }}
-                        <ul style="padding: 0" class="errorlist">{{ form.username.errors }}</ul>
-                    </div>
+        <div class="container_big2">
+            <div class="container">
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_user.username.label }}</p>
+                    {{ form_user.username }}
+                    <ul>{{ form_user.username.errors }}</ul>
+                </div>
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_user.password1.label }}</p>
+                    {{ form_user.password1 }}
+                    <ul >{{ form_user.password1.errors }}</ul>
+                </div>
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_user.password2.label }}</p>
+                    {{ form_user.password2 }}
+                    <ul>{{ form_user.password2.errors }}</ul>
                 </div>
             </div>
-            {# Отчество #}
-            <div class="container_fsb">
-                {# password1 #}
-                <div>
-                    <p class="name_hint" >{{ form.password1.label }}</p>
-                    <div class="input_form">
-                        {{ form.password1 }}
-                    </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.password1.errors }}</ul>
+            <div class="container">
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_user.last_name.label }}</p>
+                    {{ form_user.last_name }}
+                    <ul>{{ form.last_name.errors }} </ul>
                 </div>
-                {# password2 #}
-                <div>
-                    <p class="name_hint" >{{ form.password2.label }}</p>
-                    <div class="input_form">
-                        {{ form.password2 }}
-                    </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.password2.errors }}</ul>
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_user.first_name.label }}</p>
+                    {{ form_user.first_name }}
+                    <ul>{{ form_user.first_name.errors }}</ul>
                 </div>
-
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ form_expansion_user.patronymic.label }}</p>
+                    {{ form_expansion_user.patronymic }}
+                    <ul>{{ form_expansion_user.patronymic.errors }}</ul>
+                </div>
             </div>
+            {% if 'Участник' in role%}
+                <div class="container">
+                   <div class="margin-bottom" id="id_weight_participants_div" >
+                       <p class="name_hint" >{{ form_expansion_user.weight_participants.label }}</p>
+                       {{ form_expansion_user.weight_participants }}
+                       <ul>{{ form_expansion_user.weight_participants.errors }}</ul>
+                   </div>
+                   <div class="margin-bottom" id="id_medical_insurance_participants_div">
+                       <p class="name_hint" >{{ form_expansion_user.medical_insurance_participants.label }}</p>
+                       {{ form_expansion_user.medical_insurance_participants }}
+                       <ul>{{ form_expansion_user.medical_insurance_participants.errors }}</ul>
+                   </div>
+                </div>
+            {% endif %}
         </div>
-
-        <div class="container_w500">
-            {#  Фамилия Имя #}
-            <div class="container_fsb">
-                {# last_name #}
-                <div>
-                    <p class="name_hint" >{{ form.last_name.label }}</p>
-                    <div class="input_form">
-                        {{ form.last_name }}
-                    </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.last_name.errors }} </ul>
+        <div class="container_big">
+            <div class="container">
+                 <div class="container_fsb">
+                    <button type="submit" class="btn-submit" >Сохранить</button>
+                    <a href="{% url 'show_competitions' %}" class="btn-submit navig">На главную</a>
                 </div>
-                {# first_name #}
-                <div>
-                    <p class="name_hint" >{{ form.first_name.label }}</p>
-                    <div class="input_form">
-                        {{ form.first_name }}
-                    </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.first_name.errors }}</ul>
-                </div>
-
+                <ul  class="errorlist" >{{ form.not_field_errors }}</ul>
             </div>
-            {# Отчество #}
-            <div class="container_fsb">
-                {# patronymic #}
-                <div>
-                    <p class="name_hint" >{{ form.patronymic.label }}</p>
-                    <div class="input_form">
-                        {{ form.patronymic }}
-                    </div>
-                    <ul style="padding: 0" class="errorlist">{{ form.patronymic.errors }}</ul>
-                </div>
-            </div>
-        </div>
-
-
-
-        <div class="container_w500">
-            <div class="container_fsb">
-                <button type="submit" class="btn-submit btn-content" style="margin-left: 22px">Сохранить</button>
-                <a href="{% url 'show_competitions' %}" class="btn-submit navig btn-content">На главную</a>
-            </div>
-            <ul  class="errorlist" style="margin-top: 10px; padding: 0">{{ form.not_field_errors }}</ul>
         </div>
     </form>
 

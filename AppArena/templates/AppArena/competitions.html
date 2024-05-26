@@ -1,69 +1,98 @@
 {% extends 'AppArena/base.html' %}
+{% load custom_filters %}
 {% block content %}
-<div class="container_w500 " style="max-width: max-content;">
-        <form method="GET" class="input_form  container_fsb">
-            <input type="text" name="q"   placeholder="Поиск названию">
-            <select name="status">
-                <option value="" selected>Все статусы</option>
-                <option value="pending">В ожидании</option>
-                <option value="completed">Завершен</option>
-                <option value="ongoing">В процессе</option>
-                <option value="not_scheduled">Не проводится</option>
-            </select>
-            c:<input type="date" name="start_date" placeholder="Начальная дата">
-            до:<input type="date" name="end_date" placeholder="Конечная дата">
-            <button type="submit" class="btn-submit" >Поиск</button>
-        </form>
+<div class="container_filter">
+    <form method="GET" class="container_fsb ">
+        <input type="text" name="q" class="margin-bottom" placeholder="Поиск названию">
+        <select name="status" class="margin-bottom">
+            <option value="" selected>Все статусы</option>
+            <option value="pending">В ожидании</option>
+            <option value="completed">Завершен</option>
+            <option value="ongoing">В процессе</option>
+        </select>
+        c: <input type="date" name="start_date" class="margin-bottom" placeholder="Начальная дата">
+        до: <input type="date" name="end_date" class="margin-bottom" placeholder="Конечная дата">
+        <button type="submit" class="btn-submit margin-bottom"  >Поиск</button>
+    </form>
 </div>
-<div class="plashki" >
 
-
-
-    {% for c in competitions %}
-
-        <div class="card">
-            <div style="display: flex;flex-direction: column; justify-content: space-between;">
-                <p >{{ c.name_competition }}</p>
-                <p>{{ c.address }}</p>
-                {% if c.status_competition and c.date_event > today%}
-                <p style="color: #40A1A7;">В ожидании</p>
-                {% elif c.status_competition and c.date_event < today%}
-                <p style="color: #696868;">Завершен</p>
-                {% elif c.status_competition and c.date_event == today%}
-                <p style="color: #696868;">В процессе</p>
-                {% elif not c.status_competition%}
-                <p style="color: #C31818;">Не проводится</p>
-                {% endif %}
-                {% for r in request.user.groups.all %}
-
-                <div style="display: flex;">
-
-
-                    <a href="#" class="btn-submit navig" style="margin-left: 0px">{{ c.organizer.last_name }}
-                 {{ c.organizer.first_name|slice:":1" }}.{{ c.organizer.expansionuser.patronymic|slice:":1" }}.</a>
-                    {% if r.name == "referee" and c.organizer.username == request.user.username %}
-                    <a href="{% url 'choose_judges' c.slug %}" class="btn-submit navig "  style="margin-left: 0px">Судьи</a>
-                    <form action="{% url 'delete_competition' c.slug %}" method="post" >
-                        {% csrf_token %}
-                        {% if c.status_competition %}
-                        <button type="submit" class="btn-submit" style="margin-left: 0px" >Отменить соревнование</button>
+<div class="container_filter" >
+    <div class="card-container">
+        {% for c in competitions %}
+            {% if c.status_competition and c.date_event > today%}
+                <div class="card_red card_green">
+                    <div class="in_card">
+                        {% if c.address|length > 60 %}
+                            <p>{{ c.address|slice:":60" }}...</p>
                         {% else %}
-                        <button type="submit" class="btn-submit navig" style="margin-left: 0px" >Вернуть соревнование</button>
+                            <p>{{ c.address }}</p>
                         {% endif %}
-                    </form>
-                    {% endif %}
-                    <a href="{% url 'competition' c.slug %}" class="btn-submit navig" style="margin-left: 0px">Подробнее</a>
+                        {% if c.name_competition|length > 60 %}
+                            <h3>{{ c.name_competition|slice:":60" }}...</h3>
+                        {% else %}
+                            <h3>{{ c.name_competition }}</h3>
+                        {% endif %}
+                        {% if c.date_event != c.date_end%}
+                            <p>{{ c.date_event }} - {{c.date_end}}</p>
+                        {% else %}
+                            <p>{{ c.date_event }}</p>
+                        {% endif %}
+                         <div class="container_in_card">
+                            <p style="color: #40A1A7;">В ожидании</p>
+                            <a href="{% url 'competition' c.slug %}" class="btn-submit navig" style="margin-left: 0px">Подробнее</a>
+                        </div>
+                    </div>
                 </div>
-
-            {% endfor %}
-            </div>
-            <div class="data_in_card">
-                <p>{{ c.date_event }}</p>
-            </div>
-
-
-        </div>
-    {% endfor %}
-
+            {% elif c.status_competition and c.date_event < today and c.date_end < today%}
+                <div class="card_red">
+                    <div class="in_card">
+                        {% if c.address|length > 60 %}
+                            <p>{{ c.address|slice:":60" }}...</p>
+                        {% else %}
+                            <p>{{ c.address }}</p>
+                        {% endif %}
+                        {% if c.name_competition|length > 60 %}
+                            <h3>{{ c.name_competition|slice:":60" }}...</h3>
+                        {% else %}
+                            <h3>{{ c.name_competition }}</h3>
+                        {% endif %}
+                        {% if c.date_event != c.date_end%}
+                            <p>{{ c.date_event }} - {{c.date_end}}</p>
+                        {% else %}
+                            <p>{{ c.date_event }}</p>
+                        {% endif %}
+                        <div class="container_in_card">
+                            <p style="color: #696868;">Завершен</p>
+                            <a href="{% url 'competition' c.slug %}" class="btn-submit navig" style="margin-left: 0px">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% elif c.status_competition and c|is_ongoing%}
+                <div class="card_red card_usually">
+                    <div class="in_card">
+                        {% if c.address|length > 60 %}
+                            <p>{{ c.address|slice:":60" }}...</p>
+                        {% else %}
+                            <p>{{ c.address }}</p>
+                        {% endif %}
+                        {% if c.name_competition|length > 60 %}
+                            <h3>{{ c.name_competition|slice:":60" }}...</h3>
+                        {% else %}
+                            <h3>{{ c.name_competition }}</h3>
+                        {% endif %}
+                        {% if c.date_event != c.date_end%}
+                            <p>{{ c.date_event }} - {{c.date_end}}</p>
+                        {% else %}
+                            <p>{{ c.date_event }}</p>
+                        {% endif %}
+                        <div class="container_in_card">
+                            <p style="color: #696868;">В процессе</p>
+                            <a href="{% url 'competition' c.slug %}" class="btn-submit navig" style="margin-left: 0px">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

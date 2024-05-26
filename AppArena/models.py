@@ -14,19 +14,27 @@ class ExpansionUser(models.Model):
 
     license_number_trainer = models.CharField(max_length=10, null=True, blank=True, verbose_name='Лицензия')
 
-    medical_insurance_participants = models.CharField(max_length=10, null=True, blank=True, verbose_name='Страховка')
+    medical_insurance_participants = models.CharField(max_length=10, null=True, blank=True, verbose_name='Номер страхования жизни')
     weight_participants = models.DecimalField(max_digits=6, decimal_places=3, null=True, blank=True, verbose_name='Вес')
     date_birth_participants = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
+
+    def __str__(self):
+        if self.date_birth_participants is None:
+            return f'{self.user.last_name} {self.user.first_name[:1]}. {self.patronymic[:1]}.'
+        else:
+            return f'{self.user.last_name} {self.user.first_name[:1]}.  {self.patronymic[:1]}. {self.date_birth_participants}'
 
 
 class Competition(models.Model):
     name_competition = models.CharField(max_length=100, verbose_name='Название')
     date_event = models.DateField(verbose_name='Дата проведения')
     address = models.CharField(max_length=127, verbose_name='Адрес')
+    description = models.TextField(blank=True, null=True, verbose_name="Описание")
     status_competition = models.BooleanField(default=True, verbose_name='Статус')
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=255, unique=True,
                             verbose_name='Уникальное название')
+    date_end = models.DateField(verbose_name='Дата завершения')
 
     def __str__(self):
         return self.name_competition
@@ -66,7 +74,6 @@ class Category(models.Model):
     id_competition = models.ForeignKey(Competition, on_delete=models.CASCADE)
     id_weight = models.ForeignKey(Weight, on_delete=models.CASCADE)
     id_age = models.ForeignKey(Age, on_delete=models.CASCADE)
-    slug = models.SlugField(max_length=255, unique=True, default=f"{id_weight}{id_age}")
 
     def __str__(self):
         return f"Category {self.id} - Competition {self.id_competition} - Weight {self.id_weight} - Age {self.id_age}"

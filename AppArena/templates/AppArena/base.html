@@ -2,36 +2,41 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% load custom_filters %}
     <meta charset="UTF-8">
     <title>{{ title }}</title>
-    <link type="text/css" href="{% static 'AppArena/css/style.css' %}" rel="stylesheet">
+    <link type="text/css" href="{% static 'AppArena/css/style2.css' %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'AppArena/image/logo2.png' %}" type="image/x-icon">
 
 <body>
-    <header>
-        {% if request.user.is_authenticated %}
-        <nav class="container_fsb">
-            <div class="container_faic">
+    {% if request.user.is_authenticated %}
+        <header class="container_head margin-bottom">
+            <nav class="container_nav">
+                <img src="{% static 'AppArena/image/FullLogo.png' %}" style=" width: 70px;">
                 {% for c in request.user.groups.all %}
-                    {% if c.name == "referee" %}
+                    {% if c.name == "Секретарь" %}
                         {% for item in menu %}
                             <a href="{% url item.url_name %} " class="btn-submit navig">{{item.title}}</a>
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
-            </div>
-
-            <div class="container_faic">
-                <a href="{% url 'profile'  user.pk %}" class="btn-submit navig btn-content" >{{ user.last_name }}
-                 {{ user.first_name|slice:":1" }}.{{ user.expansionuser.patronymic|slice:":1" }}.</a>
+            </nav>
+            <nav class="container_nav">
+                 <a href="{% url 'profile'  user.pk %}" class="btn-submit navig" >
+                     {% for group in user.groups.all %}
+                        {{ group.name }} -
+                     {% endfor %}
+                     {{ user.last_name }} {{ user.first_name|slice:":1" }}.{{ user.expansionuser.patronymic|slice:":1" }}.
+                 </a>
                 <a href="{% url 'sign_out' %} " class="btn-submit navig">Выйти</a>
-            </div>
+            </nav>
+        </header>
+    {% else %}
+        <img class='center-image' src="{% static 'AppArena/image/FullLogo.png' %}">
+    {% endif %}
+    <h1 class="margin-bottom">{{ title }}</h1>
 
-        </nav>
-        {% endif %}
-    </header>
 
-
-    <h2 class="page_title">{{ title }}</h2>
 
     {% block content %}
     {% endblock %}
