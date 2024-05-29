@@ -1,0 +1,8 @@
+{% extends 'AppArena/base.html' %}
+{% block content %}
+<div class="container_filter">
+   {% for meet in meets%}
+        {{meet}}
+   {% endfor%}
+</div>
+{% endblock %}

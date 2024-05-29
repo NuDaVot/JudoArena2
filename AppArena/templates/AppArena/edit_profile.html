@@ -45,6 +45,11 @@
                        {{ form_expansion_user.weight_participants }}
                        <ul>{{ form_expansion_user.weight_participants.errors }}</ul>
                    </div>
+                    <div class="margin-bottom" id="id_id_trener" >
+                       <p class="name_hint" >{{ form_trainer_participant.user_trainer.label }}</p>
+                       {{ form_trainer_participant.user_trainer }}
+                       <ul>{{ form_trainer_participant.user_trainer.errors }}</ul>
+                   </div>
                    <div class="margin-bottom" id="id_medical_insurance_participants_div">
                        <p class="name_hint" >{{ form_expansion_user.medical_insurance_participants.label }}</p>
                        {{ form_expansion_user.medical_insurance_participants }}

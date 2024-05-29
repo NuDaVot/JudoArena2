@@ -21,7 +21,7 @@
     <div class="container_40 container_fsb margin-bottom">
         <button class="btn-submit" type="submit">Сохранить</button>
         {% if request.META.HTTP_REFERER == 'http://127.0.0.1:8000/add_competition/' %}
-            <a href="{% url 'show_competitions' %}" class="btn-submit navig">Отмена</a>
+            <a href="{% url 'create_category' comp_slug=competition.slug %}" class="btn-submit navig">Отмена</a>
         {% else %}
             <a href="{% url 'competition' comp_slug=competition.slug %}" class="btn-submit navig">Обратно</a>
         {% endif %}

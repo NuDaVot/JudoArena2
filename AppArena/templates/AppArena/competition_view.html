@@ -1,41 +1,57 @@
 {% extends 'AppArena/base.html' %}
 {% block content %}
-    <div class="container_w500">
-        <p>Адрес соревнования: {{ comp.address }}</p>
-        <p>Дата соревнования: {{ comp.date_event }}</p>
-        <p>Организатор соревнования: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
+    <div class="container_big">
+        <h3 class="margin-bottom">Общая информация</h3>
+        <p class="text_wrap margin-bottom">Адрес: {{ comp.address }}</p>
+        <p class="text_wrap margin-bottom" >Дата проведения:
+            {% if comp.date_event != comp.date_end%}
+                {{ comp.date_event }} - {{comp.date_end}}
+            {% else %}
+                {{ comp.date_event }}
+            {% endif %}
+        </p>
+        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
             {{ comp.organizer.expansionuser.patronymic|slice:":1" }}.</p>
-        <h3>Категории соревнования:</h3>
-
-        <ul>
+        <p class="text_wrap margin-bottom">Описание: {{ comp.description|linebreaks }} </p>
+        <h3 class="margin-bottom" >Список судей</h3>
+        <div class="margin-bottom">
+            {% for referee in referees %}
+                <p>
+                    {{ referee.user.last_name }} {{ referee.user.first_name }} {{ referee.patronymic }}
+                    {% if referee.category_referee %}
+                        - Категория: {{ referee.category_referee }}
+                    {% endif %}
+                </p>
+            {% empty %}
+                <p>Нет судей для этого соревнования.</p>
+            {% endfor %}
+        </div>
+        <h3 class="margin-bottom" >Категории соревнования:</h3>
+        <div class="categories-container margin-bottom">
             {% for category in categories %}
-                <li style="margin-bottom: 50px"><a class="btn-submit navig "  href="{% url 'category' comp.slug category.pk %}" >Вес до: {{ category.id_weight.weight_end|floatformat:"0" }} кг. Возраст:
+                <a class="btn-submit navig"  href="{% url 'category' comp.slug category.pk %}" >
+                    Возраст:
                     {% if category.id_age.age_start|date:"Y" == category.id_age.age_end|date:"Y" %}
                         {{ category.id_age.age_start|date:"Y" }}
                     {% else %}
                         {{ category.id_age.age_start|date:"Y" }} - {{ category.id_age.age_end|date:"Y" }}
+                    {% endif %}<br>
+                    {% if category.id_weight.weight_end is None %}
+                        Вес: {{ category.id_weight.weight_start|floatformat:"0" }} + кг.
+                    {% else %}
+                        Вес: {{ category.id_weight.weight_start|floatformat:"0" }} - {{ category.id_weight.weight_end|floatformat:"0" }}кг.
                     {% endif %}
-                </a></li>
+                </a>
             {% endfor %}
-        </ul>
-        {% if r.name == "referee" and c.organizer.username == request.user.username %}
-         <form action="{% url 'delete_competition' comp.slug %}" method="post" >
-                        {% csrf_token %}
-                        {% if comp.status_competition %}
-                        <button type="submit" class="btn-submit " style="margin-left: 0px" >Отменить соревнование</button>
-                        {% else %}
-
-                        <button type="submit" class="btn-submit navig" style="margin-left: 0px" >Вернуть соревнование</button>
-
-                        {% endif %}
-         </form>
-        {% endif%}
-        <a href="{% url 'show_competitions' %}" class="btn-submit">К списку соревнований</a>
-         {% for c in request.user.groups.all %}
-            {% if c.name == "Секретарь" %}
-                <a href="{% url 'choose_judges' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Судьи</a>
-                <a href="{% url 'create_category' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Добавить категорию</a>
-            {% endif %}
-        {% endfor %}
+        </div>
+        <div class="container_big container_fsb">
+            <a href="{% url 'show_competitions' %}" class="btn-submit">К списку соревнований</a>
+            {% for c in request.user.groups.all %}
+                {% if c.name == "Секретарь" and comp.date_end >= today%}
+                    <a href="{% url 'choose_judges' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Судьи</a>
+                    <a href="{% url 'create_category' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Добавить категорию</a>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

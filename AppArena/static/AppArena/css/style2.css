@@ -105,7 +105,7 @@ h1 {
     height: auto;
     max-width: 90%;
 }
-.container input, select,input[type="date"], input[type="text"]{
+.container input, select,input[type="date"], input[type="text"], input[type="checkbox"], input[type="number"]{
     font-family: 'Bellota-Regular', sans-serif;
     font-size: 20px;
     padding: 7px;
@@ -115,6 +115,17 @@ h1 {
     background-color: transparent;
     color: #696868;
     width: 100%;
+}
+input[type="checkbox"]{
+    font-family: 'Bellota-Regular', sans-serif;
+    font-size: 20px;
+    padding: 7px;
+    border: 1px solid #ccc;
+    outline:none;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #696868;
+    width: 10%;
 }
 .btn_container{
     display: grid;
@@ -229,7 +240,7 @@ textarea {
     justify-content: space-between;
     align-items: center;
 }
-#id_judges, #id_existing_judges{
+#id_judges, #id_existing_judges #id_consent{
     margin-top: 10px;
 }
 #id_judges label{
@@ -249,4 +260,35 @@ textarea {
     color: #696868;
     position: relative;
     cursor: pointer;
+}
+#id_consent label{
+    display: flex;
+    align-items: center;
+    font-family: 'Bellota-Regular', sans-serif;
+    font-size: 18px;
+    color: #696868;
+    position: relative;
+    cursor: pointer;
+}
+.text_wrap{
+    text-wrap: wrap;
+}
+.categories-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.category-item {
+    display: block;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.category-item:hover {
+    background-color: #e9e9e9;
 }

@@ -1,55 +1,105 @@
 {% extends 'AppArena/base.html' %}
 {% block content %}
+<div class="container_filter">
+    <form method="GET" action="{% url 'category' comp_slug category_id %}" class="container_fsb margin-bottom ">
+        <input type="text" name="q" placeholder="Искать по фамилие" value="{{ query }}">
+        <select name="status" >
+            <option value="" selected>Все статусы</option>
+            <option value="True">Одобрена</option>
+            <option value="False">На расмотрении</option>
+        </select>
+        <button class="btn-submit" type="submit">Искать</button>
+    </form>
+    <div class="container_big container_fsb margin-bottom">
+        <h2 class="section-title">{{title2}}</h2>
+    </div>
+    <div class="container_big container_fsb">
+        <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
+        <a href="{% url 'competition' comp_slug %}" class="btn-submit navig">Назад к соревнованию</a>
+        <a href="{% url 'meets' comp_slug category_id %}" class="btn-submit navig">Жерибьевка</a>
+        {% for role in request.user.groups.all %}
+            {% if role.name == "Тренер"%}
+                <a href="{% url 'suitable_participants' category_id %}" class="btn-submit navig">Подать заявку</a>
+            {% elif role.name == "Судья" %}
 
-    <ul style="">
-        {% for c in request.user.groups.all %}
-
-            {% if c.name == "referee" or c.name == "trainer" %}
-                {% for application in applications %}
-                    <p class="btn-submit navig">Номер заявки: {{ application.id }}</p>
-                    <p>Имя: {{ application.id_participant.first_name }}</p>
-                    <p>Фамилия: {{ application.id_participant.last_name }}</p>
-                    <p>Отчество: {{ application.id_participant.expansionuser.patronymic }}</p>
-                    <p>Вес: {{ application.id_participant.expansionuser.weight_participants }}</p>
-                    <p>Дата рождения: {{ application.id_participant.expansionuser.date_birth_participants }}</p>
-                    <p style="margin-bottom: 50px">Статус заявки: {{ application.status_application }}</p>
-
-                    {% for c in role %}
-                        {% if c.name == "judge" %}
-                            {% if application.status_application %}
-                                <form action="{% url 'reject_application' application.id %}" method="post" class="inline-form">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-reject">Отклонить</button>
-                                </form>
-                            {% else %}
-                                <form action="{% url 'approve_application' application.id %}" method="post" class="inline-form">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-approve">Одобрить</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            {% else %}
-                {% for application in applications %}
-                    {% if application.id_participant.pk == request.user.pk %}
-                        <p>Номер заявки: {{ application.id }}</p>
-                        <p>Имя: {{ application.id_participant.first_name }}</p>
-                        <p>Фамилия: {{ application.id_participant.last_name }}</p>
-                        <p>Отчество: {{ application.id_participant.expansionuser.patronymic }}</p>
-                        <p>Вес: {{ application.id_participant.expansionuser.weight_participants }}</p>
-                        <p>Дата рождения: {{ application.id_participant.expansionuser.date_birth_participants }}</p>
-                        <p>Статус заявки: {{ application.status_application }}</p>
-                    {% endif %}
-                {% endfor %}
             {% endif %}
         {% endfor %}
-    </ul>
-    <a href="{% url 'show_competitions' %}" class="btn-back">К списку соревнований</a>
-    <a href="{% url 'competition' comp_slug %}" class="btn-back">Назад к соревнованию</a>
-    {% for c in role %}
-        {% if c.name == "trainer"%}
-            <a href="{% url 'suitable_participants' category_slug=category_slug %}" class="btn-apply">Подать заявку</a>
-        {% endif %}
-    {% endfor %}
+    </div>
+    <div class="card-container margin-bottom">
+        {% for application in applications %}
+            {% if application.status_application and comp.date_event >= application.date%}
+                <div id="application_{{ application.pk }}" class="card_red card_green margin-bottom">
+                    <div class="in_card">
+                        <p>Номер заявки: {{ application.pk }}</p>
+                        <h3>{{ application.participant.last_name }}
+                            {{ application.participant.first_name }}
+                            {{ application.participant.expansionuser.patronymic }}
+                        </h3>
+                        <p>Вес: {{ application.participant.expansionuser.weight_participants }}</p>
+                        <p>Дата рождения: {{ application.participant.expansionuser.date_birth_participants }}</p>
+                        <p>Тренер: {{ application.trainer.last_name }}
+                            {{ application.trainer.first_name }}
+                            {{ application.trainer.expansionuser.patronymic }}
+                        </p>
+                         <div class="container_in_card">
+                            <p style="color: #40A1A7;">Одобрена</p>
+                            {% for c in request.user.groups.all %}
+                                {% if c.name == "Секретарь" %}
+                                    {% if application.status_application %}
+                                        <form action="{% url 'reject_application' comp.slug category_id application.id %}#application_{{ application.pk }}1" method="post" class="inline-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-submit navig">Отклонить</button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{% url 'reject_application' comp.slug category_id application.id %}#application_{{ application.pk }}" method="post" class="inline-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-submit navig">Одобрить</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div id="application_{{ application.pk }}1" class="card_red margin-bottom">
+                    <div class="in_card">
+                        <p>Номер заявки: {{ application.pk }}</p>
+                        <h3>{{ application.participant.last_name }}
+                            {{ application.participant.first_name }}
+                            {{ application.participant.expansionuser.patronymic }}
+                        </h3>
+                        <p>Вес: {{ application.participant.expansionuser.weight_participants }}</p>
+                        <p>Дата рождения: {{ application.participant.expansionuser.date_birth_participants }}</p>
+                        <p>Тренер: {{ application.trainer.last_name }}
+                            {{ application.trainer.first_name }}
+                            {{ application.trainer.expansionuser.patronymic }}
+                        </p>
+                         <div class="container_in_card">
+                            <p style="color: #40A1A7;">На расмотрении</p>
+                            {% for c in request.user.groups.all %}
+                                {% if c.name == "Секретарь" %}
+                                    {% if application.status_application %}
+                                        <form action="{% url 'reject_application' comp.slug category_id application.id %}#application_{{ application.pk }}1" method="post" class="inline-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-submit navig">Отклонить</button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{% url 'reject_application' comp.slug category_id application.id %}#application_{{ application.pk }}" method="post" class="inline-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-submit navig">Одобрить</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+</div>
+
+
 {% endblock %}

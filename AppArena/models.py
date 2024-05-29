@@ -10,7 +10,7 @@ class ExpansionUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     patronymic = models.CharField(max_length=45, verbose_name='Отчество')
 
-    category_referee = models.IntegerField(null=True, blank=True, verbose_name='Катеория')
+    category_referee = models.IntegerField(null=True, blank=True, verbose_name='Категория')
 
     license_number_trainer = models.CharField(max_length=10, null=True, blank=True, verbose_name='Лицензия')
 
@@ -23,6 +23,11 @@ class ExpansionUser(models.Model):
             return f'{self.user.last_name} {self.user.first_name[:1]}. {self.patronymic[:1]}.'
         else:
             return f'{self.user.last_name} {self.user.first_name[:1]}.  {self.patronymic[:1]}. {self.date_birth_participants}'
+
+
+class TrainerParticipant(models.Model):
+    user_trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trainer')
+    user_participant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participant')
 
 
 class Competition(models.Model):
@@ -83,15 +88,15 @@ class Category(models.Model):
 
 
 class Application(models.Model):
-    id_trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trainer_applications')
-    id_participant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participant_applications')
-    id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    trainer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trainer_applications')
+    participant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='participant_applications')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     status_application = models.BooleanField(default=False)
 
     def __str__(self):
-        return (f"Application {self.id} - Participant {self.id_participant} - Category {self.id_category} - "
-                f"Trainer {self.id_trainer}")
+        return (f"Application {self.id} - Participant {self.participant.last_name} - Category {self.category} - "
+                f"Trainer {self.trainer.last_name}")
 
     def get_absolute_url(self):
         return reverse('application', kwargs={'application_id': self.pk})

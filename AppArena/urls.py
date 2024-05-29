@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import *
 
 
@@ -9,9 +10,12 @@ urlpatterns = [
     path('competitions/', show_competitions, name='show_competitions'),
     path('profile/<int:id_user>', edit_profile, name='profile'),
     path('add_competition/', add_competition, name='add_competition'),
-    # path('competition/delete/<slug:comp_slug>/', delete_competition, name='delete_competition'),
+    path('suitable_participants/<int:id_category>/', suitable_participants, name='suitable_participants'),
+    path('suitable_participants/<int:id_category>/participant/<int:id_participant>', suitable_participants, name='suitable_participants_with'),
     path('competition/<slug:comp_slug>', show_competition, name='competition'),
     path('competition/<slug:comp_slug>/choose-judges/', choose_judges, name='choose_judges'),
     path('competition/<slug:comp_slug>/category/<int:id_category>', category, name='category'),
+    path('competition/<slug:comp_slug>/category/<int:id_category>/meets/', meets, name='meets'),
     path('competition/<slug:comp_slug>/create_category/', create_category, name='create_category'),
+    path('competition/<slug:comp_slug>/category/<int:id_category>/application/<int:id_application>', reject_application, name='reject_application'),
 ]

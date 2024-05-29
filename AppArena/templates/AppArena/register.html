@@ -37,6 +37,13 @@
                     {{ form.patronymic }}
                     <ul>{{ form.patronymic.errors }}</ul>
                 </div>
+                <div class="margin-bottom" id="id_id_trener">
+                    <p class="name_hint" >{{ form.id_trener.label }}</p>
+                    {{ form.id_trener }}
+                    <ul>{{ form.id_trener.errors }}</ul>
+                </div>
+
+
             </div>
              <div class="container">
                 <div class="margin-bottom">
@@ -64,8 +71,17 @@
                      {{ form.license_number_trainer }}
                      <ul>{{ form.license_number_trainer.errors }}</ul>
                 </div>
+
             </div>
         </div>
+        <div class="container container_fsb">
+            <div class="margin-bottom " style="align-items: center; display: flex; flex-wrap: nowrap; margin-left: 22px">
+                <input type="checkbox" name="consent" required id="id_consent" style="width: 20px;" >
+                <p class="name_hint" style="white-space: nowrap; margin: 0;">даю согласие на обработку персональных данных</p>
+                <ul style="margin: 0;"></ul>
+            </div>
+        </div>
+
         <div class="container">
             <div class="container_fsb">
                 <button type="submit" class="btn-submit btn-content" style="margin-left: 22px">{{ name_btn }}</button>
@@ -82,11 +98,13 @@
             if ($('#id_role').val() !== '1') {
                 $('#id_license_number_trainer_div').show();
                 $('#id_weight_participants_div').hide();
+                $('#id_id_trener').hide();
                 $('#id_date_birth_participants_div').hide();
                 $('#id_medical_insurance_participants_div').hide();
             } else {
                 $('#id_license_number_trainer_div').hide();
                 $('#id_weight_participants_div').show();
+                $('#id_id_trener').show();
                 $('#id_medical_insurance_participants_div').show();
                 $('#id_date_birth_participants_div').show();
             }
@@ -95,11 +113,13 @@
                 if ($(this).val() !== '1') {
                     $('#id_license_number_trainer_div').show();
                     $('#id_weight_participants_div').hide();
+                    $('#id_id_trener').hide();
                     $('#id_date_birth_participants_div').hide();
                     $('#id_medical_insurance_participants_div').hide();
                 } else {
                     $('#id_license_number_trainer_div').hide();
                     $('#id_weight_participants_div').show();
+                    $('#id_id_trener').show();
                     $('#id_medical_insurance_participants_div').show();
                     $('#id_date_birth_participants_div').show();
                 }

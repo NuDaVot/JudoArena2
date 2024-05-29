@@ -1,0 +1,44 @@
+{% extends 'AppArena/base.html' %}
+{% block content %}
+<div class="container_big2 margin-bottom">
+    <form method="GET" action="{% url 'suitable_participants' category.pk %}" class="container_40 container_fsb margin-bottom">
+        <input type="text" name="q" placeholder="Искать по фамилие" value="{{ query }}">
+        <button class="btn-submit" type="submit">Искать</button>
+    </form>
+    <div class="container_big container_fsb margin-bottom">
+        <h2 class="section-title">{{title2}}</h2>
+    </div>
+    <div class="container_big container_fsb">
+        <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
+        <a href="{% url 'competition' comp_slug %}" class="btn-submit navig">Назад к соревнованию</a>
+    </div>
+    <div class="card-container margin-bottom">
+        {% for participant in participants %}
+                <div id="participant_{{ participant.pk }}" class="card_red card_green margin-bottom">
+                    <div class="in_card">
+                        <p>Номер участника: {{ participant.pk }}</p>
+                        <h3>{{ participant.last_name }}
+                            {{ participant.first_name }}
+                            {{ participant.expansionuser.patronymic }}
+                        </h3>
+                        <p>Вес: {{ participant.expansionuser.weight_participants }}</p>
+                        <p>Дата рождения: {{ participant.expansionuser.date_birth_participants }}</p>
+
+                         <div class="container_in_card"><br>
+                            {% for c in request.user.groups.all %}
+                                {% if c.name == "Тренер" %}
+                                     <form action="{% url 'suitable_participants_with' category.pk participant.pk %}#participant_{{ participant.pk }}" method="post" class="inline-form">
+                                         {% csrf_token %}
+                                         <button type="submit" class="btn-submit navig">Подать заявку</button>
+                                     </form>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+
+
+</div>
+{% endblock %}

@@ -1,32 +1,74 @@
 <!-- create_category.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Category</title>
-</head>
-<body>
-    <h1>Create Category</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ category_form.as_p }}
-        <button type="submit">Create Category</button>
-    </form>
+{% extends 'AppArena/base.html' %}
+{% block content %}
 
-    <h2>Add Age</h2>
     <form method="post">
         {% csrf_token %}
-        {{ age_form.as_p }}
-        <button type="submit" name="add_age">Add Age</button>
+        <div class="container_40 container_fsb margin-bottom">
+            <div>
+                 <h2 >{{ category_form.id_age.label }}</h2 >
+                 {{ category_form.id_age }}
+                 <ul class="errorlist">{{ category_form.id_age.errors }}</ul>
+            </div>
+            <div>
+                 <h2  >{{ category_form.id_weight.label }}</h2>
+                 {{ category_form.id_weight }}
+                 <ul class="errorlist">{{ category_form.id_weight.errors }}</ul>
+             </div>
+        </div>
+        <div class="container_40 container_fsb margin-bottom">
+            <button class="btn-submit" type="submit">Добавитиь категорию</button>
+        </div>
+        <div class="container_40 container_fsb margin-bottom">
+            <p class="errorlist" >{{error_message}}</p>
+        </div>
+        <div class="container_40 container_fsb margin-bottom">
+            <p >{{message}}</p>
+        </div>
     </form>
+    <div class="container_40 container_fsb margin-bottom">
+        <form method="post">
+            {% csrf_token %}
+            <h2 class="margin-bottom">Добавить возраст</h2>
+            <div class="container" style="max-width: 100%;">
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ age_form.age_start.label }}</p>
+                    {{ age_form.age_start }}
+                    <ul>{{ age_form.age_start.errors }} </ul>
+                </div>
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ age_form.age_end.label }}</p>
+                    {{ age_form.age_end }}
+                    <ul>{{ age_form.age_end.errors }} </ul>
+                </div>
+            </div>
+            <div class="container_big container_fsb margin-bottom">
+                <button class="btn-submit margin-bottom" type="submit" name="add_age">Добавить</button>
+            </div>
 
-    <h2>Add Weight</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ weight_form.as_p }}
-        <button type="submit" name="add_weight">Add Weight</button>
-    </form>
-    <p >{{error_message}}</p>
-    <p >{{message}}</p>
-    <a href="{% url 'competition' comp.slug %}" class="btn-submit navig " >К соревнованию</a>
-</body>
-</html>
+        </form>
+        <form method="post">
+            {% csrf_token %}
+            <h2 class="margin-bottom">Добавить вес</h2>
+            <div class="container" style="max-width: 100%;">
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ weight_form.weight_start.label }}</p>
+                    {{ weight_form.weight_start }}
+                    <ul>{{ weight_form.weight_start.errors }} </ul>
+                </div>
+                <div class="margin-bottom">
+                    <p class="name_hint" >{{ weight_form.weight_end.label }}</p>
+                    {{ weight_form.weight_end }}
+                    <ul>{{ weight_form.weight_end.errors }} </ul>
+                </div>
+            </div>
+            <div class="container_big container_fsb margin-bottom">
+                <button class="btn-submit margin-bottom" type="submit" name="add_weight">Добавить</button>
+            </div>
+        </form>
+
+    </div>
+    <div class="container container_fsb margin-bottom">
+        <a href="{% url 'competition' comp.slug %}" class="btn-submit navig " >К соревнованию</a>
+    </div>
+{% endblock %}
