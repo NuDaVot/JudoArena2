@@ -190,8 +190,6 @@ class ProfileTrainerParticipant(forms.ModelForm):
         fields = ['user_trainer']
 
 
-
-
 class JudgesForm(forms.Form):
 
     judges = forms.ModelMultipleChoiceField(
@@ -286,4 +284,24 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields = ['trainer', 'participant', 'category']
 
+
+class MeetForm(forms.ModelForm):
+    class Meta:
+        model = Meet
+        fields = ['id_judge', 'duration', 'assessments', 'result']
+        labels = {
+            'id_judge': 'Судья',
+            'duration': 'Продолжительность (минуты)',
+            'assessments': 'Оценки',
+            'result': 'Результат',
+        }
+        widgets = {
+            'assessments': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(MeetForm, self).__init__(*args, **kwargs)
+        self.fields['id_judge'].empty_label = 'Выберите судьбю'
+        trainer_group = Group.objects.get(name="Судья")
+        self.fields['id_judge'].queryset = User.objects.filter(groups=trainer_group)
 

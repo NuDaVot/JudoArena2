@@ -1,31 +1,6 @@
 {% extends 'AppArena/base.html' %}
 {% block content %}
     <div class="container_big">
-        <h3 class="margin-bottom">Общая информация</h3>
-        <p class="text_wrap margin-bottom">Адрес: {{ comp.address }}</p>
-        <p class="text_wrap margin-bottom" >Дата проведения:
-            {% if comp.date_event != comp.date_end%}
-                {{ comp.date_event }} - {{comp.date_end}}
-            {% else %}
-                {{ comp.date_event }}
-            {% endif %}
-        </p>
-        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
-            {{ comp.organizer.expansionuser.patronymic|slice:":1" }}.</p>
-        <p class="text_wrap margin-bottom">Описание: {{ comp.description|linebreaks }} </p>
-        <h3 class="margin-bottom" >Список судей</h3>
-        <div class="margin-bottom">
-            {% for referee in referees %}
-                <p>
-                    {{ referee.user.last_name }} {{ referee.user.first_name }} {{ referee.patronymic }}
-                    {% if referee.category_referee %}
-                        - Категория: {{ referee.category_referee }}
-                    {% endif %}
-                </p>
-            {% empty %}
-                <p>Нет судей для этого соревнования.</p>
-            {% endfor %}
-        </div>
         <h3 class="margin-bottom" >Категории соревнования:</h3>
         <div class="categories-container margin-bottom">
             {% for category in categories %}
@@ -53,5 +28,34 @@
                 {% endif %}
             {% endfor %}
         </div>
+         <h3 class="margin-bottom">Общая информация</h3>
+        <p class="text_wrap margin-bottom">Адрес: {{ comp.address }}</p>
+        <p class="text_wrap margin-bottom" >Дата проведения:
+            {% if comp.date_event != comp.date_end%}
+                {{ comp.date_event }} - {{comp.date_end}}
+            {% else %}
+                {{ comp.date_event }}
+            {% endif %}
+        </p>
+        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
+            {{ comp.organizer.expansionuser.patronymic|slice:":1" }}.</p>
+        <p class="text_wrap margin-bottom">Описание: {{ comp.description|linebreaks }} </p>
+        <h3 class="margin-bottom" >Список судей</h3>
+        <div class="margin-bottom">
+            {% for referee in referees %}
+                <p>
+                    {{ referee.user.last_name }} {{ referee.user.first_name }} {{ referee.patronymic }}
+                    {% if referee.category_referee %}
+                        - Категория: {{ referee.category_referee }}
+                    {% endif %}
+                </p>
+            {% empty %}
+                <p>Нет судей для этого соревнования.</p>
+            {% endfor %}
+        </div>
     </div>
+    <div class="container_big container_fsb">
+            <a href="{% url 'generate_pdf' comp.slug  %}" class="btn-submit">Сгенерировать doc</a>
+
+        </div>
 {% endblock %}

@@ -103,17 +103,17 @@ class Application(models.Model):
 
 
 class Meet(models.Model):
-    id_white = models.ForeignKey(User, on_delete=models.CASCADE, related_name='white_meets')
-    id_blue = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blue_meets')
+    id_white = models.ForeignKey(User, on_delete=models.CASCADE, related_name='white_meets', null=True, blank=True)
+    id_blue = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blue_meets', null=True, blank=True)
     sequence_number = models.IntegerField(null=True, blank=True)
     id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
     id_judge = models.ForeignKey(User, related_name='judge_meets', on_delete=models.CASCADE, null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
-    assessments = models.JSONField(null=True, blank=True)
+    assessments = models.TextField(null=True, blank=True)
     result = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
-        return f"Meet {self.id} - White {self.id_white} - Blue {self.id_blue} - Category {self.id_category}"
+        return f"Meet sequence_number {self.sequence_number} - White {self.id_white} - Blue {self.id_blue} - Category {self.id_category}"
 
     def get_absolute_url(self):
         return reverse('meet', kwargs={'meet_id': self.pk})

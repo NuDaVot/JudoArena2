@@ -4,6 +4,9 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import Group
 
 
+
+
+
 def unique_slugify(instance, slug):
     model = instance.__class__
     unique_slug = slugify(slug)
@@ -22,3 +25,5 @@ def group_required(group_name):
             return view_func(request, *args, **kwargs)
         return _wrapped_view
     return decorator
+
+

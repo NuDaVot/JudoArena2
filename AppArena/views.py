@@ -1,19 +1,23 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+
 from django.contrib.auth import authenticate, login, logout
 from .forms import *
-from django.contrib.auth.decorators import login_required
-from datetime import date
-from datetime import datetime
-from django.contrib.auth.forms import PasswordChangeForm
-from django.views.generic import UpdateView
+
 from datetime import date, datetime
 from django.db.models import Case, When, IntegerField, Q
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from .utils import group_required
+import random
+import math
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from django.http import HttpResponse
+from .models import Competition, Category
 
 MENU = [{'title': "Добавить соревнование", 'url_name': 'add_competition'},
         {'title': "На главную", 'url_name': 'show_competitions'},
@@ -413,17 +417,293 @@ def suitable_participants(request, id_category, id_participant=None):
     }
     return render(request, 'AppArena/suitable_participants.html', context)
 
+
+
+
 @login_required
 def meets(request, comp_slug, id_category):
-    print(1)
     category = get_object_or_404(Category, id=id_category)
-    applications = Application.objects.filter(category_id=category)
-    meets = Meet.objects.filter(id_category_id=category)
+    applications = Application.objects.filter(category_id=category, status_application=True)
+    meets = list(Meet.objects.filter(id_category_id=category))
 
+    applications_list = list(applications)
+    participant_count = next_power_of_two(len(applications_list))
+
+    rounds = {}
+    total_rounds = power_of_two_exponent(participant_count)
+    current_start_index = 0
+    match_number = 0
+    offset = 0
+
+    for round_index in range(total_rounds -1, 0, -1):
+        meets = list(Meet.objects.filter(id_category_id=category))
+        matches_in_round = 2 ** round_index
+        current_round_meets = []
+
+        for j in range(current_start_index, current_start_index + matches_in_round):
+            if j < len(meets):
+                current_round_meets.append(meets[j])
+                match_number += 1
+
+        match_number -= offset
+        rounds[total_rounds - round_index - 1] = current_round_meets
+        # if len(current_round_meets) == 4:
+        #     break
+        offset = 0
+        previous_round_index = total_rounds - round_index - 1
+        for j in range(0, current_start_index + matches_in_round, 2):
+            if j < len(rounds.get(previous_round_index, [])):
+                meet1 = rounds[previous_round_index][j]
+                if j + 1 < len(rounds[previous_round_index]):
+                    meet2 = rounds[previous_round_index][j + 1]
+                else:
+                    break
+
+                if meet1.result is None or meet2.result is None:
+                    match_number += 1
+                    continue
+
+                winner1 = meet1.id_white if meet1.result else meet1.id_blue
+                winner2 = meet2.id_white if meet2.result else meet2.id_blue
+                match_number += 1
+                offset += 1
+
+                Meet.objects.get_or_create(
+                    id_white=winner1,
+                    id_blue=winner2,
+                    sequence_number=match_number,
+                    id_category=category
+                )
+
+        current_start_index += matches_in_round
+
+
+    sum = 0
+    for i in range(total_rounds):
+        sum += 2**i
+    print(sum == len(meets), sum, len(meets))
+    if sum == len(meets):
+        rounds[len(rounds)] = [meets[len(meets)-1]]
+
+    for round_meets in rounds.values():
+        for meet in round_meets:
+            print(meet)
+        print("-" * 20)
     context = {
         'title': "Список встреч",
         'applications': applications,
         'meets': meets,
+        'category': category,
+        'comp_slug': comp_slug,
+        'rounds': rounds,
+        'title2': f"Встречи категории {category.id_weight}кг. {category.id_age}",
     }
     return render(request, 'AppArena/meets_view.html', context)
+
+
+def next_power_of_two(x):
+    return 1 if x == 0 else 2**(x - 1).bit_length()
+
+
+def power_of_two_exponent(n):
+    if n < 1 or (n & (n - 1)) != 0:
+        raise ValueError("The input must be a power of 2.")
+    return int(math.log2(n))
+
+
+@login_required
+@group_required('Судья')
+def draw_meet(request, comp_slug, id_category):
+    try:
+        category = Category.objects.get(pk=id_category)
+    except Category.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Category not found'})
+
+    Meet.objects.filter(id_category=category, id_judge__isnull=True).delete()
+
+    # Fetch all participants in the given category
+    participants = User.objects.filter(
+        groups__name='Участник',
+        participant_applications__category=category,
+        participant_applications__status_application=True
+    ).distinct()
+    participant_list = list(participants)
+
+    target_length = next_power_of_two(len(participant_list))
+
+    while len(participant_list) < target_length:
+        participant_list.append(None)
+
+    random.shuffle(participant_list)
+
+    valid_pairs = []
+    i = 0
+    while i < len(participant_list):
+        white = participant_list[i]
+        blue = participant_list[i + 1] if participant_list[i + 1] else None
+        if white is None and blue is None:
+            random.shuffle(participant_list)
+            i = 0
+            valid_pairs = []
+            continue  # Skip pairing (None, None)
+
+        valid_pairs.append((white, blue))
+        i += 2
+
+    # Create Meet instances
+    sequence_number = 1
+    for white, blue in valid_pairs:
+        meet, created = Meet.objects.get_or_create(
+            id_white=white,
+            id_blue=blue,
+            sequence_number=sequence_number,
+            id_category=category
+        )
+        if not created:
+            error_message = "Этот вес уже существует"
+
+        sequence_number += 1
+
+    return redirect('meets', comp_slug, id_category)  # Redirect to a relevant view after the draw
+
+
+@login_required
+@group_required('Секретарь')
+def edit_meet(request, meet_id):
+    meet = get_object_or_404(Meet, id=meet_id)
+    if request.method == 'POST':
+        form = MeetForm(request.POST, instance=meet)
+        if form.is_valid():
+
+            form.save()
+
+            return redirect('meets', comp_slug=meet.id_category.id_competition.slug, id_category=meet.id_category.pk)
+    else:
+        form = MeetForm(instance=meet)
+    return render(request, 'AppArena/edit_meet.html', {'form': form})
+
+@login_required
+def meet_detail(request, meet_id):
+    meet = get_object_or_404(Meet, id=meet_id)
+    return render(request, 'AppArena/meet_detail.html', {'meet': meet})
+
+
+def generate_pdf_view(request, comp_slug):
+    try:
+        competition = get_object_or_404(Competition, slug=comp_slug)
+        response = generate_docx_for_competition(competition)
+        today = date.today()
+        comp = get_object_or_404(Competition, slug=comp_slug)
+        categories = Category.objects.filter(id_competition=comp)
+        referees = CompetitorReferee.objects.filter(competition=comp).select_related('referee')
+        expansion_users = ExpansionUser.objects.filter(user__in=[ref.referee for ref in referees])
+        context = {
+            'title': f"{comp.name_competition}",
+            'comp': comp,
+            'categories': categories,
+            'role': request.user.groups.all(),
+            'today': today,
+            'referees': expansion_users,
+        }
+        return render(request, 'AppArena/competition_view.html', context)
+    except Competition.DoesNotExist:
+        return HttpResponse("Соревнование не найдено", status=404)
+
+
+from docx import Document
+from docx.shared import Pt
+from docx.oxml.ns import qn
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Inches
+from .models import User, Category, Application
+
+def generate_docx_for_competition(competition):
+    competition_id = competition.pk
+    competition_name = competition.name_competition.replace('"', '')
+    date_event = str(competition.date_event)
+    address = competition.address
+    description = competition.description
+
+    # Create a new Document
+    doc = Document()
+    doc.styles['Normal'].font.name = 'Arial'
+    doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Arial')
+
+    # Add competition title
+    title = doc.add_heading(level=1)
+    run = title.add_run(competition_name)
+    run.font.size = Pt(24)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # Add competition data
+    doc.add_paragraph(f"Дата проведения: {date_event}")
+    doc.add_paragraph(f"Адрес: {address}")
+    doc.add_paragraph(f"Описание: {description}")
+
+    # Get referees for the competition
+    referees = User.objects.filter(competitorreferee__competition_id=competition)
+    doc.add_heading('Судьи', level=2)
+    for referee in referees:
+        full_name = f"{referee.last_name} {referee.first_name} {referee.expansionuser.patronymic}"
+        doc.add_paragraph(full_name, style='List Bullet')
+
+    # Get categories for the competition
+    categories = Category.objects.filter(id_competition=competition)
+    doc.add_heading('Категории и Участники', level=2)
+
+    total_applications = 0
+
+    for category in categories:
+        category_id_weight = category.id_weight
+        category_id_age = category.id_age
+
+        participants = [
+            (
+                f"{app.participant.last_name} {app.participant.first_name} {app.participant.expansionuser.patronymic}",
+                f"{app.participant.expansionuser.weight_participants} кг",
+                app.participant.expansionuser.date_birth_participants
+            )
+            for app in Application.objects.filter(category=category)
+        ]
+
+        total_applications += len(participants)
+
+        # Add category heading
+        doc.add_heading(f"{category_id_weight} - {category_id_age}", level=3)
+
+        # Add table for participants
+        table = doc.add_table(rows=1, cols=4)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'Фамилия Имя Отчество'
+        hdr_cells[1].text = 'Вес'
+        hdr_cells[2].text = 'Дата Рождения'
+        hdr_cells[3].text = 'Возраст'
+
+        for name, weight, birth_date in participants:
+            row_cells = table.add_row().cells
+            row_cells[0].text = name
+            row_cells[1].text = weight
+            row_cells[2].text = birth_date.strftime('%d.%m.%Y')
+            age = (competition.date_event.year - birth_date.year) - ((competition.date_event.month, competition.date_event.day) < (birth_date.month, birth_date.day))
+            row_cells[3].text = str(age)
+
+        # Add number of applications for the category
+        doc.add_paragraph(f"Количество заявок: {len(participants)}")
+
+    # Add total number of applications
+    doc.add_heading('Общее количество заявок', level=2)
+    doc.add_paragraph(f"Всего заявок: {total_applications}")
+
+    # Save the document
+    file_name = f'{competition_name}.docx'
+    doc.save(file_name)
+    print(f"DOCX saved as {file_name}")
+
+# Пример вызова функции с объектом competition
+# competition = ... (получите объект competition из базы данных)
+# generate_docx_for_competition(competition)
+
 

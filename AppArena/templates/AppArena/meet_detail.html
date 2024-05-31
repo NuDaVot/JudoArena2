@@ -1,0 +1,19 @@
+<!-- templates/meet_detail.html -->
+{% extends 'AppArena/base.html' %}
+
+{% block content %}
+<div class="container_40">
+    <h2 class="section-title">Детали встречи</h2>
+    <p>Номер: {{ meet.sequence_number }}</p>
+    <p>Белый: {{ meet.id_white.first_name }} {{ meet.id_white.last_name }}</p>
+    <p>Синий: {{ meet.id_blue.first_name }} {{ meet.id_blue.last_name }}</p>
+    <p>Категория: {{ meet.id_category }}</p>
+    <p>Судья: {{ meet.id_judge }}</p>
+    <p>Продолжительность: {{ meet.duration }} минут</p>
+    <p>Оценки: {{ meet.assessments }}</p>
+    <p>Результат: {% if meet.result %}Победил Белый{% else %}Победил Синий{% endif %}</p>
+    <a href="{% url 'edit_meet' meet.id %}" class="btn-submit">Редактировать встречу</a>
+</div>
+
+
+{% endblock %}

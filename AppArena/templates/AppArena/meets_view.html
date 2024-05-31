@@ -1,8 +1,144 @@
+<!-- templates/draw_meet.html -->
 {% extends 'AppArena/base.html' %}
+
 {% block content %}
 <div class="container_filter">
-   {% for meet in meets%}
-        {{meet}}
-   {% endfor%}
+    <h2 class="container_big container_fsb">{{ title2 }}</h2>
+
+    <div class="container_big2">
+        {% for round_index, round in rounds.items %}
+            <div class="round-container">
+                <div class="round-title">Круг {{ round_index|add:"1" }}</div>
+                <div class="card-container">
+                    {% for meet in round %}
+<!--                    {% url 'meet_detail' meet.id %}-->
+                        <div class="card"><a href="#" class="card-link">
+                            <p class="meet-info">Номер: {{ meet.sequence_number }}</p>
+                            {% if meet.id_white is not None %}
+                                <p class="meet-info">Белый: {{ meet.id_white.last_name }}
+                                    {{ meet.id_white.last_name|slice:":1" }}.
+                                    {{ meet.id_white.expansionuser.patronymic|slice:":1" }}. </p>
+                            {% else %}
+                                <p class="meet-info">----Нет----</p>
+                            {% endif %}
+                            {% if meet.id_blue is not None %}
+                                <p class="meet-info">Синий: {{ meet.id_blue.last_name }}
+                                    {{ meet.id_blue.last_name|slice:":1" }}.
+                                    {{ meet.id_blue.expansionuser.patronymic|slice:":1" }}. </p>
+                            {% else %}
+                                <p class="meet-info">----Нет----</p>
+                            {% endif %}
+                            {% if meet.result is not None %}
+                                {% if meet.result %}
+                                    <p class="meet-info margin-bottom">Победил Белый</p>
+                                {% else %}
+                                    <p class="meet-info margin-bottom">Победил Синий</p>
+                                {% endif %}
+                            {% else %}
+                                <p class="meet-info margin-bottom">Еще не проводилась</p>
+                            {% endif %}
+                            {% for role in request.user.groups.all %}
+                            {% if role.name == "Секретарь" %}
+                                <a  href="{% url 'edit_meet' meet.id %}" class="btn-submit margin-bottom">Провести</a>
+                            {% endif %}
+                            {% endfor %}
+                        </a></div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container_big container_fsb">
+        <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
+        <a href="{% url 'competition' comp_slug %}" class="btn-submit navig">Назад к соревнованию</a>
+        {% for role in request.user.groups.all %}
+            {% if role.name == "Судья" %}
+                {% if not meets %}
+                    <a href="{% url 'draw_meet' comp_slug category.id %}" class="btn-submit">Начать жеребьевку</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
 </div>
+
+<style>
+.container_nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: 20px;
+}
+.container_nav > * {
+    margin-right: 10px;
+}
+.container_nav > *:last-child {
+    margin-right: 0;
+}
+.container_filter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    max-width: 1200px;
+}
+.round-container {
+    margin-bottom: 30px;
+}
+.round-title {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
+}
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.card {
+    padding: 20px;
+    background: linear-gradient(to top left, #6CC6CB, #EAE5C9);
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.meet-info {
+    margin-bottom: 10px;
+}
+.btn-submit {
+    padding: 10px 20px;
+    background-color: #6CC6CB;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.btn-submit:hover {
+    background-color: #5BA6A5;
+}
+@media (max-width: 1200px) {
+    .card-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 900px) {
+    .card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+}
+.card-link {
+    text-decoration: none; /* Remove default underline */
+    color: inherit; /* Inherit color from parent */
+    display: inline-block; /* Ensure the link fills the entire card */
+    width: 100%; /* Make the link take up the full width of the card */
+}
+</style>
 {% endblock %}
+

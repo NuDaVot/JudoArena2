@@ -17,8 +17,8 @@ class Command(BaseCommand):
     help = 'Populates the database with sample data'
 
     def handle(self, *args, **options):
-        self.create_trainers()
-        self.create_participants()
+        self.category_referee()
+
 
     def create_trainers(self, username_prefix='trainer', count=10):
         for i in range(count):
@@ -73,3 +73,23 @@ class Command(BaseCommand):
                     TrainerParticipant.objects.create(user_trainer=trainer, user_participant=user)
 
                     print(f'Created participant: {username}')
+    def category_referee(self , username_prefix='ref', count=10):
+        for i in range(count):
+            username = f'{username_prefix}_{i}'
+            password = 'your_password'  # замените это на реальный пароль
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            patronymic = random.choice(patronymics)
+
+            # Создание пользователя Django
+            user = User.objects.create_user(username=username, password=password, first_name=first_name,
+                                            last_name=last_name)
+            user.groups.set([3])  # Установка группы "Тренер"
+            # Создание профиля ExpansionUser
+            expansion_user = ExpansionUser.objects.create(
+                user=user,
+                patronymic=patronymic,
+                category_referee=fake.random_number(digits=1)
+                # заполните остальные поля аналогичным образом
+            )
+            print(f'Created trainer: {username}')

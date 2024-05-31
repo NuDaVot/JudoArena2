@@ -1,0 +1,50 @@
+<!-- templates/edit_meet.html -->
+{% extends 'AppArena/base.html' %}
+
+{% block content %}
+<div class="container_filter">
+    <h2 class="section-title">Редактировать встречу</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="container_big">
+            <div class="card-container">
+                <div>
+                    <p class="name_hint">{{ form.id_judge.label }}</p>
+                    <div class="input_form">
+                        {{ form.id_judge }}
+                    </div>
+                </div>
+                <div>
+                    <p class="name_hint">{{ form.duration.label }}</p>
+                    <div class="input_form">
+                        {{ form.duration }}
+                    </div>
+                </div>
+                <div>
+                    <p class="name_hint">{{ form.result.label }}</p>
+                    <div class="input_form">
+                        {{ form.result }}
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="card-container">
+                 <div>
+                    <p class="name_hint">{{ form.assessments.label }}</p>
+                    <div class="input_form">
+                        {{ form.assessments }}
+                        <ul class="errorlist">{{ form.assessments.errors }}</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container_big container_fsb">
+            <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
+            <button type="submit" class="btn-submit">Сохранить изменения</button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

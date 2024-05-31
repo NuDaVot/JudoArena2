@@ -18,4 +18,8 @@ urlpatterns = [
     path('competition/<slug:comp_slug>/category/<int:id_category>/meets/', meets, name='meets'),
     path('competition/<slug:comp_slug>/create_category/', create_category, name='create_category'),
     path('competition/<slug:comp_slug>/category/<int:id_category>/application/<int:id_application>', reject_application, name='reject_application'),
+    path('competition/<slug:comp_slug>/category/<int:id_category>/meets/draw/', draw_meet, name='draw_meet'),
+    path('meet/<int:meet_id>/', meet_detail, name='meet_detail'),
+    path('meet/<int:meet_id>/edit/', edit_meet, name='edit_meet'),
+    path('generate_pdf/<slug:comp_slug>/', generate_pdf_view, name='generate_pdf'),
 ]
