@@ -11,7 +11,6 @@
                 <div class="round-title">Круг {{ round_index|add:"1" }}</div>
                 <div class="card-container">
                     {% for meet in round %}
-<!--                    {% url 'meet_detail' meet.id %}-->
                         <div class="card"><a href="#" class="card-link">
                             <p class="meet-info">Номер: {{ meet.sequence_number }}</p>
                             {% if meet.id_white is not None %}
@@ -30,12 +29,24 @@
                             {% endif %}
                             {% if meet.result is not None %}
                                 {% if meet.result %}
-                                    <p class="meet-info margin-bottom">Победил Белый</p>
+
+                                    <div style="display: flex;align-items: center;justify-content: space-around;" >
+                                         <p class="meet-info margin-bottom">Победил Белый</p>
+                                        <div class="meet-info margin-bottom" style="width: 10px;height: 10px;background: white;"></div>
+                                    </div>
                                 {% else %}
-                                    <p class="meet-info margin-bottom">Победил Синий</p>
+                                    <div style="display: flex;align-items: center;justify-content: space-around;" >
+                                        <p class="meet-info margin-bottom">Победил Синий</p>
+                                        <div class="meet-info margin-bottom" style="width: 10px;height: 10px;background: blue;"></div>
+                                    </div>
+
                                 {% endif %}
                             {% else %}
-                                <p class="meet-info margin-bottom">Еще не проводилась</p>
+
+                                <div style="display: flex;align-items: center;justify-content: space-around;" >
+                                    <p class="meet-info margin-bottom">Еще не проводилась</p>
+                                    <div class="meet-info margin-bottom" style="width: 10px;height: 10px;border: 2px solid black"></div>
+                                </div>
                             {% endif %}
                             {% for role in request.user.groups.all %}
                             {% if role.name == "Секретарь" %}
@@ -49,16 +60,22 @@
         {% endfor %}
     </div>
 
-    <div class="container_big container_fsb">
+    <div class="container_big2 container_fsb">
         <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
         <a href="{% url 'competition' comp_slug %}" class="btn-submit navig">Назад к соревнованию</a>
-        {% for role in request.user.groups.all %}
-            {% if role.name == "Судья" %}
-                {% if not meets %}
-                    <a href="{% url 'draw_meet' comp_slug category.id %}" class="btn-submit">Начать жеребьевку</a>
+        {% if meets %}
+        <a href="{% url 'meets_docx' category.pk  %}" class="btn-submit">Сформировать документ</a>
+        <a href="{% url 'meets_docx2' category.pk  %}" class="btn-submit">Подвести итоги</a>
+        {% endif %}
+        {% if request.user in competitor_referee %}
+            {% for role in request.user.groups.all %}
+                {% if role.name == "Судья" %}
+                    {% if not meets %}
+                        <a href="{% url 'draw_meet' comp_slug category.id %}" class="btn-submit">Начать жеребьевку</a>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        {% endfor %}
+            {% endfor %}
+         {% endif %}
     </div>
 </div>
 

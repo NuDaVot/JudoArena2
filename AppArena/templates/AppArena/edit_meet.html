@@ -12,18 +12,21 @@
                     <p class="name_hint">{{ form.id_judge.label }}</p>
                     <div class="input_form">
                         {{ form.id_judge }}
+                        <ul class="errorlist">{{ form.id_judge.errors }}</ul>
                     </div>
                 </div>
                 <div>
                     <p class="name_hint">{{ form.duration.label }}</p>
                     <div class="input_form">
                         {{ form.duration }}
+                        <ul class="errorlist">{{ form.duration.errors }}</ul>
                     </div>
                 </div>
                 <div>
                     <p class="name_hint">{{ form.result.label }}</p>
                     <div class="input_form">
                         {{ form.result }}
+                        <ul class="errorlist">{{ form.result.errors }}</ul>
                     </div>
                 </div>
 
@@ -40,7 +43,7 @@
             </div>
         </div>
         <div class="container_big container_fsb">
-            <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
+            <a href="{% url 'meets' comp_slug category_id %}" class="btn-submit navig">Обратно</a>
             <button type="submit" class="btn-submit">Сохранить изменения</button>
         </div>
 

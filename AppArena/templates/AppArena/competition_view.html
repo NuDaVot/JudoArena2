@@ -37,25 +37,25 @@
                 {{ comp.date_event }}
             {% endif %}
         </p>
-        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.last_name }} {{ comp.organizer.first_name|slice:":1" }}.
-            {{ comp.organizer.expansionuser.patronymic|slice:":1" }}.</p>
+        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.user.last_name }} {{ comp.organizer.user.first_name|slice:":1" }}.
+            {{ comp.organizer.patronymic|slice:":1" }}.</p>
         <p class="text_wrap margin-bottom">Описание: {{ comp.description|linebreaks }} </p>
         <h3 class="margin-bottom" >Список судей</h3>
-        <div class="margin-bottom">
+        <ul class="margin-bottom" style="margin-left: 20px">
             {% for referee in referees %}
-                <p>
+                <li>
                     {{ referee.user.last_name }} {{ referee.user.first_name }} {{ referee.patronymic }}
                     {% if referee.category_referee %}
                         - Категория: {{ referee.category_referee }}
                     {% endif %}
-                </p>
+                </li>
             {% empty %}
                 <p>Нет судей для этого соревнования.</p>
             {% endfor %}
-        </div>
+        </ul>
     </div>
     <div class="container_big container_fsb">
-            <a href="{% url 'generate_pdf' comp.slug  %}" class="btn-submit">Сгенерировать doc</a>
+            <a href="{% url 'generate_pdf' comp.slug  %}" class="btn-submit">Сформировать документ</a>
 
         </div>
 {% endblock %}

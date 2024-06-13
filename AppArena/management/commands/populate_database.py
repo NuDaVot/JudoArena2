@@ -17,8 +17,7 @@ class Command(BaseCommand):
     help = 'Populates the database with sample data'
 
     def handle(self, *args, **options):
-        self.category_referee()
-
+        self.create_participants()
 
     def create_trainers(self, username_prefix='trainer', count=10):
         for i in range(count):
@@ -41,16 +40,17 @@ class Command(BaseCommand):
             print(f'Created trainer: {username}')
 
     def create_participants(self):
+
         trainers = User.objects.filter(groups__name='Тренер')
         for trainer in trainers:
             for category in range(1, 9):  # Диапазон категорий
-                for _ in range(10):  # Создание 15 участников для каждой категории
-                    username = fake.user_name()
-                    password = 'your_password'  # замените это на реальный пароль
+                for i in range(10):  # Создание 15 участников для каждой категории
+                    username = f'participant_{i}{category}{trainer}1314'
+                    password = '1234'  # замените это на реальный пароль
                     first_name = fake.first_name()
                     last_name = fake.last_name()
                     patronymic = random.choice(patronymics)
-                    birth_date = fake.date_of_birth(minimum_age=14, maximum_age=16)  # Генерация даты рождения
+                    birth_date = fake.date_of_birth(minimum_age=13, maximum_age=14)  # Генерация даты рождения
                     weight = random.randint(42, 110)  # Генерация веса
                     insurance_number = fake.random_number(digits=10)  # Генерация номера страховки
 
@@ -66,13 +66,13 @@ class Command(BaseCommand):
                         medical_insurance_participants=insurance_number,
                         weight_participants=weight,
                         date_birth_participants=birth_date,
-                        category_referee=category  # Установка категории
                     )
 
                     # Создание записи TrainerParticipant
                     TrainerParticipant.objects.create(user_trainer=trainer, user_participant=user)
 
                     print(f'Created participant: {username}')
+
     def category_referee(self , username_prefix='ref', count=10):
         for i in range(count):
             username = f'{username_prefix}_{i}'

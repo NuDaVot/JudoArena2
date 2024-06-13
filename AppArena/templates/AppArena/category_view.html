@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container_filter">
     <form method="GET" action="{% url 'category' comp_slug category_id %}" class="container_fsb margin-bottom ">
-        <input type="text" name="q" placeholder="Искать по фамилие" value="{{ query }}">
+        <input type="text" name="q" placeholder="Искать по фамилии" value="{{ query }}">
         <select name="status" >
             <option value="" selected>Все статусы</option>
             <option value="True">Одобрена</option>
@@ -16,7 +16,8 @@
     <div class="container_big container_fsb">
         <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>
         <a href="{% url 'competition' comp_slug %}" class="btn-submit navig">Назад к соревнованию</a>
-        <a href="{% url 'meets' comp_slug category_id %}" class="btn-submit navig">Жерибьевка</a>
+
+        <a href="{% url 'meets' comp_slug category_id %}" class="btn-submit navig">Жеребьевка</a>
         {% for role in request.user.groups.all %}
             {% if role.name == "Тренер"%}
                 <a href="{% url 'suitable_participants' category_id %}" class="btn-submit navig">Подать заявку</a>

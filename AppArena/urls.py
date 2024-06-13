@@ -21,5 +21,7 @@ urlpatterns = [
     path('competition/<slug:comp_slug>/category/<int:id_category>/meets/draw/', draw_meet, name='draw_meet'),
     path('meet/<int:meet_id>/', meet_detail, name='meet_detail'),
     path('meet/<int:meet_id>/edit/', edit_meet, name='edit_meet'),
-    path('generate_pdf/<slug:comp_slug>/', generate_pdf_view, name='generate_pdf'),
+    path('generate_doc_cop/<slug:comp_slug>/', generate_doc_view, name='generate_pdf'),
+    path('generate_doc_meet1/<int:id_category>/', generate_meets_docx_for_competition, name='meets_docx'),
+    path('generate_doc_meet2/<int:id_category>/', generate_meets2_docx_for_competition, name='meets_docx2'),
 ]

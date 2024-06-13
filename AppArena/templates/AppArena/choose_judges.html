@@ -1,7 +1,7 @@
 {% extends 'AppArena/base.html' %}
 {% block content %}
 <form class="container_40 container_fsb margin-bottom" method="GET" action="{% url 'choose_judges' comp_slug=competition.slug %}">
-    <input type="text" name="last_name" placeholder="Поиск по имене" value="{{ last_name_query }}">
+    <input type="text" name="last_name" placeholder="Поиск по имени" value="{{ last_name_query }}">
     <button class="btn-submit" type="submit">Искать</button>
 </form>
 <form method="post">

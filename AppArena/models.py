@@ -36,7 +36,7 @@ class Competition(models.Model):
     address = models.CharField(max_length=127, verbose_name='Адрес')
     description = models.TextField(blank=True, null=True, verbose_name="Описание")
     status_competition = models.BooleanField(default=True, verbose_name='Статус')
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE)
+    organizer = models.ForeignKey(ExpansionUser, on_delete=models.CASCADE, verbose_name='Организатор')
     slug = models.SlugField(max_length=255, unique=True,
                             verbose_name='Уникальное название')
     date_end = models.DateField(verbose_name='Дата завершения')
@@ -107,8 +107,8 @@ class Meet(models.Model):
     id_blue = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blue_meets', null=True, blank=True)
     sequence_number = models.IntegerField(null=True, blank=True)
     id_category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    id_judge = models.ForeignKey(User, related_name='judge_meets', on_delete=models.CASCADE, null=True, blank=True)
-    duration = models.IntegerField(null=True, blank=True)
+    id_judge = models.ForeignKey(ExpansionUser, related_name='judge_meets', on_delete=models.CASCADE, null=True, blank=True)
+    duration = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     assessments = models.TextField(null=True, blank=True)
     result = models.BooleanField(null=True, blank=True)
 

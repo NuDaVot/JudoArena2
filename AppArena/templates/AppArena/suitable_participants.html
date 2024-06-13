@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container_big2 margin-bottom">
     <form method="GET" action="{% url 'suitable_participants' category.pk %}" class="container_40 container_fsb margin-bottom">
-        <input type="text" name="q" placeholder="Искать по фамилие" value="{{ query }}">
+        <input type="text" name="q" placeholder="Искать по фамилии" value="{{ query }}">
         <button class="btn-submit" type="submit">Искать</button>
     </form>
     <div class="container_big container_fsb margin-bottom">

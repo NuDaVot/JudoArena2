@@ -71,9 +71,14 @@ class SignUpForm(UserCreationForm):
         if date_birth_participants and date_birth_participants > timezone.now().date() - timedelta(days=365 * 4):
             self.add_error('date_birth_participants', "Не верная дата рождения")
 
+        if date_birth_participants and date_birth_participants < timezone.now().date() - timedelta(days=365 * 120):
+            self.add_error('date_birth_participants', "Не верная дата рождения")
+
         if weight_participants is not None:
             weight_float = Decimal(weight_participants)
             if weight_float < 25:
+                self.add_error('weight_participants', "Не верный вес")
+            if weight_float > 500:
                 self.add_error('weight_participants', "Не верный вес")
 
         if role == '0' and not license_number_trainer:
@@ -141,7 +146,7 @@ class AddCompetitionForm(forms.ModelForm):
 
     class Meta:
         model = Competition
-        fields = ['name_competition', 'date_event', 'address', 'description','date_end']
+        fields = ['name_competition', 'date_event', 'address', 'description', 'date_end', 'organizer']
         widgets = {
             'description': forms.Textarea(attrs={'class': 'textarea_class'}),
             'address': forms.Textarea(attrs={'class': 'textarea_class'}),
@@ -162,6 +167,13 @@ class AddCompetitionForm(forms.ModelForm):
 
         if date_end and date_end < timezone.now().date():
             self.add_error('date_end', "Не верная дата")
+    def __init__(self, *args, **kwargs):
+        super(AddCompetitionForm, self).__init__(*args, **kwargs)
+        self.fields['organizer'].empty_label = 'Выберите судьбю'
+        trainer_group = Group.objects.get(name="Судья")
+        all_judges = User.objects.filter(groups=trainer_group)
+        expansion_users = ExpansionUser.objects.filter(user__in=all_judges)
+        self.fields['organizer'].queryset = expansion_users
 
 
 class ProfileForm(forms.ModelForm):
@@ -228,12 +240,12 @@ class CategoryForm(forms.ModelForm):
         fields = ['id_weight', 'id_age']
         labels = {
             'id_weight': 'Весовая категория',
-            'id_age': 'Возротсная категория',
+            'id_age': 'Возрастная категория',
         }
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
-        self.fields['id_weight'].empty_label = 'Выберите весовую категорию'
+        self.fields['id_weight'].empty_label = 'Выберите категорию'
         self.fields['id_age'].empty_label = 'Выберите возраст'
         self.fields['id_age'].queryset = Age.objects.all()
         self.fields['id_weight'].queryset = Weight.objects.all()
@@ -296,12 +308,15 @@ class MeetForm(forms.ModelForm):
             'result': 'Результат',
         }
         widgets = {
-            'assessments': forms.Textarea(attrs={'rows': 3}),
+            'assessments': forms.Textarea(attrs={'rows': 1}),
         }
 
     def __init__(self, *args, **kwargs):
         super(MeetForm, self).__init__(*args, **kwargs)
         self.fields['id_judge'].empty_label = 'Выберите судьбю'
         trainer_group = Group.objects.get(name="Судья")
-        self.fields['id_judge'].queryset = User.objects.filter(groups=trainer_group)
+        all_judges = User.objects.filter(groups=trainer_group)
+        competitor_referees = CompetitorReferee.objects.filter(referee__in=all_judges)
+        expansion_users = ExpansionUser.objects.filter(user__in=competitor_referees.values('referee'))
+        self.fields['id_judge'].queryset = expansion_users
 
