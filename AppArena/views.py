@@ -3,10 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from django.contrib.auth import authenticate, login, logout
 from .forms import *
+from .models import *
 
 from datetime import date, datetime
 from django.db.models import Case, When, IntegerField, Q
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from .utils import group_required
@@ -14,29 +14,15 @@ import random
 import math
 
 from docx import Document
-from docx.shared import Pt
-from docx.oxml.ns import qn
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from datetime import datetime
-from .models import User, Category, Application
-
-from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, RGBColor
 from docx.oxml.ns import qn
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.shared import Inches
-from .models import User, Category, Application
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from django.http import HttpResponse
-from .models import Competition, Category
+
 
 MENU = [{'title': "Добавить соревнование", 'url_name': 'add_competition'},
-        {'title': "На главную", 'url_name': 'show_competitions'},
-]
+        {'title': "На главную", 'url_name': 'show_competitions'},]
 
 
 def register(request):
@@ -55,32 +41,10 @@ def register(request):
             if user is not None:
                 login(request, user)
                 return redirect('show_competitions')
-
     else:
         logout(request)
         form = SignUpForm()
     return render(request, 'AppArena/register.html', {'form': form, 'title': "Регистрация", 'name_btn': 'Зарегистрироваться'})
-
-
-@login_required
-@group_required('Секретарь')
-def register_refery(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('show_competitions')
-
-    else:
-        logout(request)
-        form = SignUpForm()
-    return render(request, 'AppArena/register.html', {'form': form, 'title': 'Добавление судьи',
-                                                      'name_btn': 'Добавить', 'role': 'Судья'})
 
 
 def user_login(request):
@@ -102,15 +66,21 @@ def user_login(request):
 
 
 @login_required
+def user_logout(request):
+    logout(request)
+    return redirect('login')
+
+
+@login_required
 def show_competitions(request):
     today = date.today()
     competitions = Competition.objects.all()
 
     competitions = competitions.annotate(
         order=Case(
-            When(date_event__lte=today, date_end__gte=today, then=0),  # Ongoing
-            When(date_event__gt=today, then=1),  # Upcoming
-            When(date_event__lt=today, then=2),  # Completed
+            When(date_event__lte=today, date_end__gte=today, then=0),
+            When(date_event__gt=today, then=1),
+            When(date_event__lt=today, then=2),
             output_field=IntegerField(),
         )
     ).order_by('order', 'date_event')
@@ -153,8 +123,6 @@ def add_competition(request):
     if request.method == 'POST':
         form = AddCompetitionForm(request.POST)
         if form.is_valid():
-
-            # form.instance.organizer = request.user
             competition = form.save()
             judge = form.cleaned_data['organizer']
             CompetitorReferee.objects.create(competition=competition, referee=judge.user)
@@ -167,12 +135,6 @@ def add_competition(request):
         'menu': page_menu[1:]
     }
     return render(request, 'AppArena/add_competition.html', context)
-
-
-@login_required
-def user_logout(request):
-    logout(request)
-    return redirect('login')
 
 
 @login_required
@@ -292,7 +254,7 @@ def category(request, comp_slug, id_category):
         'comp_slug': comp_slug,
         'category_id': category.pk,
         'comp': comp,
-        'title2': f"Участники категории {category.id_weight}кг. {category.id_age}",
+        'title2': f"Участники категории. Вес {category.id_weight}кг. Возраст {category.id_age}",
     }
     return render(request, 'AppArena/category_view.html', context)
 
@@ -417,7 +379,6 @@ def suitable_participants(request, id_category, id_participant=None):
             ).values_list('participant__id', flat=True)
         )
 
-
     if id_participant is not None:
         participant = get_object_or_404(User, id=id_participant)
         application, created = Application.objects.get_or_create(trainer=logged_in_trainer, participant=participant, category=category)
@@ -426,17 +387,14 @@ def suitable_participants(request, id_category, id_participant=None):
         else:
             error_message = "Ошибка"
 
-
     context = {
         'participants': participants,
         'category': category,
         'comp_slug': category.id_competition.slug,
         'title': f"Падача заявки на {category.id_competition.name_competition}",
-        'title2': f"Подходящие участники категории {category.id_weight}кг. {category.id_age}",
+        'title2': f"Подходящие участники категории. Вес {category.id_weight}кг. Возраст{category.id_age}",
     }
     return render(request, 'AppArena/suitable_participants.html', context)
-
-
 
 
 @login_required
@@ -470,8 +428,6 @@ def meets(request, comp_slug, id_category):
 
         match_number -= offset
         rounds[total_rounds - round_index - 1] = current_round_meets
-        # if len(current_round_meets) == 4:
-        #     break
         offset = 0
         previous_round_index = total_rounds - round_index - 1
         for j in range(0, current_start_index + matches_in_round, 2):
@@ -500,18 +456,12 @@ def meets(request, comp_slug, id_category):
 
         current_start_index += matches_in_round
 
-
     sum = 0
     for i in range(total_rounds):
         sum += 2**i
-    # print(sum == len(meets), sum, len(meets))
     if sum == len(meets):
         rounds[len(rounds)] = [meets[len(meets)-1]]
 
-    # for round_meets in rounds.values():
-    #     for meet in round_meets:
-    #         print(meet)
-    #     print("-" * 20)
     context = {
         'title': "Список встреч",
         'applications': applications,
@@ -520,7 +470,7 @@ def meets(request, comp_slug, id_category):
         'comp_slug': comp_slug,
         'rounds': rounds,
         'competitor_referee': referees,
-        'title2': f"Встречи категории {category.id_weight}кг. {category.id_age}",
+        'title2': f"Встречи категории. Вес {category.id_weight}кг.<br>Возраст {category.id_age}",
     }
 
     return render(request, 'AppArena/meets_view.html', context)
@@ -546,7 +496,6 @@ def draw_meet(request, comp_slug, id_category):
 
     Meet.objects.filter(id_category=category, id_judge__isnull=True).delete()
 
-    # Fetch all participants in the given category
     participants = User.objects.filter(
         groups__name='Участник',
         participant_applications__category=category,
@@ -570,12 +519,11 @@ def draw_meet(request, comp_slug, id_category):
             random.shuffle(participant_list)
             i = 0
             valid_pairs = []
-            continue  # Skip pairing (None, None)
+            continue
 
         valid_pairs.append((white, blue))
         i += 2
 
-    # Create Meet instances
     sequence_number = 1
     for white, blue in valid_pairs:
         result = None
@@ -595,7 +543,7 @@ def draw_meet(request, comp_slug, id_category):
 
         sequence_number += 1
 
-    return redirect('meets', comp_slug, id_category)  # Redirect to a relevant view after the draw
+    return redirect('meets', comp_slug, id_category)
 
 
 @login_required
@@ -621,6 +569,7 @@ def edit_meet(request, meet_id):
         'form': form,
     }
     return render(request, 'AppArena/edit_meet.html', context)
+
 
 @login_required
 def meet_detail(request, meet_id):
@@ -654,37 +603,41 @@ def generate_doc_view(request, comp_slug):
 def generate_docx_for_competition(competition, organizer):
     try:
         doc_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        competition_name = competition.name_competition.replace('"','')
+        competition_name = competition.name_competition.replace('"', '')
         date_event = str(competition.date_event)
         address = competition.address
         description = competition.description
 
-        # Create a new Document
         doc = Document()
-        doc.styles['Normal'].font.name = 'Arial'
-        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Arial')
+        doc.styles['Normal'].font.name = 'Times New Roman'
+        doc.styles['Normal'].font.size = Pt(12)
+        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Times New Roman')
 
-        # Add competition title
+        # Title
         title = doc.add_heading(level=1)
         run = title.add_run(f'Протокол {competition_name}')
-        run.font.size = Pt(24)
+        run.font.size = Pt(14)
+        run.font.color.rgb = RGBColor(0, 0, 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-        # Add competition data
         doc.add_paragraph(f"Дата проведения: {date_event}")
         doc.add_paragraph(f"Адрес: {address}")
         doc.add_paragraph(f"Описание: {description}")
 
-        # Get referees for the competition
+        # Referees
         referees = User.objects.filter(competitorreferee__competition_id=competition)
-        doc.add_heading('Судьи', level=2)
+        subheading = doc.add_heading('Судьи', level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
         for referee in referees:
             full_name = f"{referee.last_name} {referee.first_name} {referee.expansionuser.patronymic}"
             doc.add_paragraph(full_name, style='List Bullet')
 
-        # Get categories for the competition
+        # Categories and Participants
         categories = Category.objects.filter(id_competition=competition)
-        doc.add_heading('Категории и Участники', level=2)
+        subheading = doc.add_heading('Категории и Участники', level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
         total_applications = 0
 
@@ -703,10 +656,10 @@ def generate_docx_for_competition(competition, organizer):
 
             total_applications += len(participants)
 
-            # Add category heading
-            doc.add_heading(f"Вес: {category_id_weight.weight_start:0.0f} - {category_id_weight.weight_end:0.0f}\nВозраст: {category_id_age}", level=2)
+            subheading = doc.add_heading(f"Вес: {category_id_weight.weight_start:0.0f} - {category_id_weight.weight_end:0.0f}\nВозраст: {category_id_age}", level=2)
+            subheading_run = subheading.runs[0]
+            subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
-            # Add table for participants
             table = doc.add_table(rows=1, cols=4)
             table.style = 'Table Grid'
             table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -724,57 +677,53 @@ def generate_docx_for_competition(competition, organizer):
                 age = (competition.date_event.year - birth_date.year) - ((competition.date_event.month, competition.date_event.day) < (birth_date.month, birth_date.day))
                 row_cells[3].text = str(age)
 
-            # Add number of applications for the category
             doc.add_paragraph(f"Количество заявок: {len(participants)}")
 
-        # Add total number of applications
-        doc.add_heading('Общее количество заявок', level=2)
+        subheading = doc.add_heading('Общее количество заявок', level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
         doc.add_paragraph(f"Всего заявок: {total_applications}")
 
-        # Add date of document generation
-
         doc.add_paragraph(f"Дата формирования документа: {doc_date}")
+        doc.add_paragraph(f"Главный судья: ____________ {organizer.user.last_name} {organizer.user.first_name} {organizer.patronymic}")
 
-        # Add organizer signature section
-        doc.add_paragraph(f"Организатор: {organizer.user.last_name} {organizer.user.first_name} {organizer.patronymic} ____________")
-
-        # Save the document
         file_name = f'{competition_name}_протокол_{datetime.now().strftime("%d.%m.%Y")}.docx'
         doc.save(file_name)
         print(f"DOCX saved as {file_name}")
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         return redirect('competition', competition.slug)
-
 
 
 def generate_meets_docx_for_competition(request, id_category):
     try:
         category = get_object_or_404(Category, id=id_category)
         competition = category.id_competition
-        competition_name = competition.name_competition.replace('"','')
+        competition_name = competition.name_competition.replace('"', '')
 
-
-        # Create a new Document
         doc = Document()
-        doc.styles['Normal'].font.name = 'Arial'
-        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Arial')
+        doc.styles['Normal'].font.name = 'Times New Roman'
+        doc.styles['Normal'].font.size = Pt(12)
+        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Times New Roman')
 
-        # Add competition title
+        # Title
         title = doc.add_heading(level=1)
         run = title.add_run(f" Жеребьевка {competition_name}")
-        run.font.size = Pt(24)
+        run.font.size = Pt(14)
+        run.font.color.rgb = RGBColor(0, 0, 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+        # Category
+        subheading = doc.add_heading(f"Категория: вес {category.id_weight} кг, возраст {category.id_age}", level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
-        # Add category data
-        doc.add_heading(f"Категория: {category.id_weight} кг, {category.id_age}", level=2)
-
-        # Add meets data
-        doc.add_heading('Встречи', level=2)
+        # Meets
+        subheading = doc.add_heading('Встречи', level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
         applications = Application.objects.filter(category_id=category, status_application=True)
-
-
         applications_list = list(applications)
         participant_count = next_power_of_two(len(applications_list))
 
@@ -786,8 +735,6 @@ def generate_meets_docx_for_competition(request, id_category):
         for round_index in range(total_rounds - 1, 0, -1):
             meets = list(Meet.objects.filter(id_category_id=category).order_by('sequence_number'))
             matches_in_round = 2 ** round_index
-
-
             for j in range(current_start_index, current_start_index + matches_in_round):
                 if j < len(meets):
                     current_round_meets.append(meets[j])
@@ -798,23 +745,19 @@ def generate_meets_docx_for_competition(request, id_category):
         table.style = 'Table Grid'
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        # Set the column widths
-        table.columns[0].width = Inches(0.5)  # Smaller width for the first column
-        table.columns[1].width = Inches(2.5)  # Larger width for the second column
-        table.columns[2].width = Inches(2.5)  # Larger width for the third column
+        table.columns[0].width = Inches(0.5)
+        table.columns[1].width = Inches(2.5)
+        table.columns[2].width = Inches(2.5)
 
-        # Add header cells
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = '№'
-        hdr_cells[1].text = 'Белый'
-        hdr_cells[2].text = 'Синий'
+        hdr_cells[1].text = 'Участник в белый'
+        hdr_cells[2].text = 'Участник в синий'
 
-        # Adjust the cell widths for the header row
         hdr_cells[0].width = Inches(0.5)
         hdr_cells[1].width = Inches(2.5)
         hdr_cells[2].width = Inches(2.5)
 
-        # Add data rows
         for meet in current_round_meets:
             row_cells = table.add_row().cells
             row_cells[0].text = str(meet.sequence_number)
@@ -823,26 +766,21 @@ def generate_meets_docx_for_competition(request, id_category):
             row_cells[2].text = (f"{meet.id_blue.last_name} {meet.id_blue.first_name} "
                                  f"{meet.id_blue.expansionuser.patronymic}") if meet.id_blue else 'Нет соперника'
 
-            # Adjust the cell widths for each data row
             row_cells[0].width = Inches(0.5)
             row_cells[1].width = Inches(2.5)
             row_cells[2].width = Inches(2.5)
 
-
-
-        # Add date of document generation
         doc_date = datetime.now().strftime('%d.%m.%Y')
         doc.add_paragraph(f"Дата формирования документа: {doc_date}")
 
-        # Add organizer signature section
-        doc.add_paragraph(f"Организатор: {request.user.last_name} {request.user.first_name} {request.user.expansionuser.patronymic} ____________")
+        doc.add_paragraph(f"Главный судья: ____________ {request.user.last_name} {request.user.first_name} {request.user.expansionuser.patronymic} ")
 
-        # Save the document
         file_name = f'{competition_name}_жеребьевка.docx'
         doc.save(file_name)
         print(f"DOCX saved as {file_name}")
         return redirect('meets', comp_slug=meet.id_category.id_competition.slug, id_category=meet.id_category.pk)
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         return redirect('meets', comp_slug=meet.id_category.id_competition.slug, id_category=meet.id_category.pk)
 
 
@@ -850,29 +788,28 @@ def generate_meets2_docx_for_competition(request, id_category):
     try:
         category = get_object_or_404(Category, id=id_category)
         competition = category.id_competition
-        competition_name = competition.name_competition.replace('"','')
+        competition_name = competition.name_competition.replace('"', '')
 
-
-        # Create a new Document
         doc = Document()
-        doc.styles['Normal'].font.name = 'Arial'
-        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Arial')
+        doc.styles['Normal'].font.name = 'Times New Roman'
+        doc.styles['Normal'].font.size = Pt(12)
+        doc.styles['Normal'].element.rPr.rFonts.set(qn('w:eastAsia'), 'Times New Roman')
 
-        # Add competition title
+        # Title
         title = doc.add_heading(level=1)
         run = title.add_run(f" Итоги {competition_name}")
-        run.font.size = Pt(24)
+        run.font.size = Pt(14)
+        run.font.color.rgb = RGBColor(0, 0, 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+        # Category
+        subheading = doc.add_heading(f"Категория: вес {category.id_weight} кг, возраст {category.id_age}", level=2)
+        subheading_run = subheading.runs[0]
+        subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
-        # Add category data
-        doc.add_heading(f"Категория: {category.id_weight} кг, {category.id_age}", level=2)
 
-        # Add meets data
-        doc.add_heading('Встречи', level=2)
 
         applications = Application.objects.filter(category_id=category, status_application=True)
-
         meets = list(Meet.objects.filter(id_category_id=category).order_by('sequence_number'))
 
         applications_list = list(applications)
@@ -896,8 +833,7 @@ def generate_meets2_docx_for_competition(request, id_category):
 
             match_number -= offset
             rounds[total_rounds - round_index - 1] = current_round_meets
-            # if len(current_round_meets) == 4:
-            #     break
+
             offset = 0
             previous_round_index = total_rounds - round_index - 1
             for j in range(0, current_start_index + matches_in_round, 2):
@@ -914,48 +850,103 @@ def generate_meets2_docx_for_competition(request, id_category):
 
                     match_number += 1
                     offset += 1
-
-
-
             current_start_index += matches_in_round
 
-        sum = 0
-        for i in range(total_rounds):
-            sum += 2 ** i
-        print(sum == len(meets), sum, len(meets))
-        if sum == len(meets):
+        sum_matches = sum(2 ** i for i in range(total_rounds))
+        print(sum_matches == len(meets), sum_matches, len(meets))
+        if sum_matches == len(meets) and meets[len(meets) - 1].result is not None:
             rounds[len(rounds)] = [meets[len(meets) - 1]]
+
+            print(meets[len(meets) - 3:len(meets)])
+
+            subheading = doc.add_heading('Занимаемые места', level=2)
+            subheading_run = subheading.runs[0]
+            subheading_run.font.color.rgb = RGBColor(0, 0, 0)
+
+            table = doc.add_table(rows=1, cols=2)
+            table.style = 'Table Grid'
+            table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+            table.columns[0].width = Inches(0.5)
+            table.columns[1].width = Inches(2.5)
+
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = 'Место №'
+            hdr_cells[1].text = 'Фио участнника'
+
+            hdr_cells[0].width = Inches(1.5)
+            hdr_cells[1].width = Inches(2.5)
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = '1'
+
+            row_cells[1].text = (f"{meets[len(meets) - 1].id_white.last_name} "
+                                 f"{meets[len(meets) - 1].id_white.first_name} "
+                                 f"{meets[len(meets) - 1].id_white.expansionuser.patronymic}") if meets[
+                len(meets) - 1].result else (f"{meets[len(meets) - 1].id_blue.last_name} "
+                                             f"{meets[len(meets) - 1].id_blue.first_name} "
+                                             f"{meets[len(meets) - 1].id_blue.expansionuser.patronymic}")
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = '2'
+
+            row_cells[1].text = (f"{meets[len(meets) - 1].id_white.last_name} "
+                                 f"{meets[len(meets) - 1].id_white.first_name} "
+                                 f"{meets[len(meets) - 1].id_white.expansionuser.patronymic}") if not meets[
+                len(meets) - 1].result else (f"{meets[len(meets) - 1].id_blue.last_name} "
+                                             f"{meets[len(meets) - 1].id_blue.first_name} "
+                                             f"{meets[len(meets) - 1].id_blue.expansionuser.patronymic}")
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = '3'
+
+            row_cells[1].text = (f"{meets[len(meets) - 2].id_white.last_name} "
+                                 f"{meets[len(meets) - 2].id_white.first_name} "
+                                 f"{meets[len(meets) - 2].id_white.expansionuser.patronymic}") if not meets[
+                 len(meets) - 2].result else (f"{meets[len(meets) - 2].id_blue.last_name} "
+                                             f"{meets[len(meets) - 2].id_blue.first_name} "
+                                             f"{meets[len(meets) - 2].id_blue.expansionuser.patronymic}")
+
+            row_cells = table.add_row().cells
+            row_cells[0].text = '3'
+
+            row_cells[1].text = (f"{meets[len(meets) - 3].id_white.last_name} "
+                                 f"{meets[len(meets) - 3].id_white.first_name} "
+                                 f"{meets[len(meets) - 3].id_white.expansionuser.patronymic}") if not meets[
+                len(meets) - 3].result else (f"{meets[len(meets) - 3].id_blue.last_name} "
+                                             f"{meets[len(meets) - 3].id_blue.first_name} "
+                                             f"{meets[len(meets) - 3].id_blue.expansionuser.patronymic}")
+
+            subheading = doc.add_heading('Встречи', level=2)
+            subheading_run = subheading.runs[0]
+            subheading_run.font.color.rgb = RGBColor(0, 0, 0)
 
             table = doc.add_table(rows=1, cols=6)
             table.style = 'Table Grid'
             table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-            # Set the column widths
-            table.columns[0].width = Inches(0.5)  # Smaller width for the first column
-            table.columns[1].width = Inches(2.5)  # Larger width for the second column
+            table.columns[0].width = Inches(0.5)
+            table.columns[1].width = Inches(2.5)
             table.columns[2].width = Inches(2.5)
-            table.columns[3].width = Inches(2.5) # Larger width for the third column
+            table.columns[3].width = Inches(2.5)
             table.columns[4].width = Inches(2.5)
             table.columns[5].width = Inches(2.5)
 
-            # Add header cells
             hdr_cells = table.rows[0].cells
             hdr_cells[0].text = '№'
-            hdr_cells[1].text = 'Белый'
-            hdr_cells[2].text = 'Синий'
+            hdr_cells[1].text = 'Участник в белый'
+            hdr_cells[2].text = 'Участник в синий'
             hdr_cells[3].text = 'Оценки и время'
             hdr_cells[4].text = 'Судья'
             hdr_cells[5].text = 'Резулитат'
 
-            # Adjust the cell widths for the header row
             hdr_cells[0].width = Inches(0.5)
             hdr_cells[1].width = Inches(2.5)
             hdr_cells[2].width = Inches(2.5)
-            hdr_cells[3].width = Inches(2.5)
+            hdr_cells[3].width = Inches(0.5)
             hdr_cells[4].width = Inches(2.5)
             hdr_cells[5].width = Inches(2.5)
 
-            # Add data rows
             for meet in meets:
                 row_cells = table.add_row().cells
                 row_cells[0].text = str(meet.sequence_number)
@@ -963,30 +954,27 @@ def generate_meets2_docx_for_competition(request, id_category):
                                      f"{meet.id_white.expansionuser.patronymic}") if meet.id_white else 'Нет соперника'
                 row_cells[2].text = (f"{meet.id_blue.last_name} {meet.id_blue.first_name} "
                                      f"{meet.id_blue.expansionuser.patronymic}") if meet.id_blue else 'Нет соперника'
+                row_cells[3].text = f'{meet.duration}мин.\n{meet.assessments}' if meet.duration is not None else "-"
+                row_cells[4].text = (f"{meet.id_judge.user.last_name} {meet.id_judge.user.first_name} "
+                                     f"{meet.id_judge.patronymic}") if meet.id_judge is not None else "-"
+                row_cells[5].text = 'Победил белый спортсмен' if meet.result else 'Победил синий спортсмен'
 
-
-
-                # Adjust the cell widths for each data row
                 row_cells[0].width = Inches(0.5)
                 row_cells[1].width = Inches(2.5)
                 row_cells[2].width = Inches(2.5)
+                row_cells[3].width = Inches(0.5)
+                row_cells[4].width = Inches(2.5)
+                row_cells[5].width = Inches(2.5)
 
-
-
-            # Add date of document generation
             doc_date = datetime.now().strftime('%d.%m.%Y')
             doc.add_paragraph(f"Дата формирования документа: {doc_date}")
 
-            # Add organizer signature section
-            doc.add_paragraph(f"Организатор: {request.user.last_name} {request.user.first_name} {request.user.expansionuser.patronymic} ____________")
+            doc.add_paragraph(f"Главный судья: ____________ {request.user.last_name} {request.user.first_name} {request.user.expansionuser.patronymic}")
 
-            # Save the document
             file_name = f'{competition_name}_итоги.docx'
             doc.save(file_name)
             print(f"DOCX saved as {file_name}")
         return redirect('meets', comp_slug=competition.slug, id_category=category.pk)
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         return redirect('meets', comp_slug=competition.slug, id_category=category.pk)
-
-
-

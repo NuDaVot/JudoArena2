@@ -169,7 +169,7 @@ class AddCompetitionForm(forms.ModelForm):
             self.add_error('date_end', "Не верная дата")
     def __init__(self, *args, **kwargs):
         super(AddCompetitionForm, self).__init__(*args, **kwargs)
-        self.fields['organizer'].empty_label = 'Выберите судьбю'
+        self.fields['organizer'].empty_label = 'Выберите судью'
         trainer_group = Group.objects.get(name="Судья")
         all_judges = User.objects.filter(groups=trainer_group)
         expansion_users = ExpansionUser.objects.filter(user__in=all_judges)
@@ -298,6 +298,17 @@ class ApplicationForm(forms.ModelForm):
 
 
 class MeetForm(forms.ModelForm):
+    RESULT_CHOICES = [
+        (None, 'Не проводилось'),
+        (True, 'Победил белый спортсмен'),
+        (False, 'Победил синий спортсмен')
+    ]
+
+    result = forms.ChoiceField(
+        choices=RESULT_CHOICES,
+        label='Результат',
+        widget=forms.Select
+    )
     class Meta:
         model = Meet
         fields = ['id_judge', 'duration', 'assessments', 'result']
@@ -313,7 +324,7 @@ class MeetForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MeetForm, self).__init__(*args, **kwargs)
-        self.fields['id_judge'].empty_label = 'Выберите судьбю'
+        self.fields['id_judge'].empty_label = 'Выберите судью'
         trainer_group = Group.objects.get(name="Судья")
         all_judges = User.objects.filter(groups=trainer_group)
         competitor_referees = CompetitorReferee.objects.filter(referee__in=all_judges)

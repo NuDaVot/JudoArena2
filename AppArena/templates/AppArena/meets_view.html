@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container_filter">
-    <h2 class="container_big container_fsb">{{ title2 }}</h2>
+    <h2 class="container_big container_fsb">{{ title2 |safe}}</h2>
 
     <div class="container_big2">
         {% for round_index, round in rounds.items %}

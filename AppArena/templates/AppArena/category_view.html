@@ -11,7 +11,7 @@
         <button class="btn-submit" type="submit">Искать</button>
     </form>
     <div class="container_big container_fsb margin-bottom">
-        <h2 class="section-title">{{title2}}</h2>
+        <h2 class="section-title">{{title2|safe}}</h2>
     </div>
     <div class="container_big container_fsb">
         <a href="{% url 'show_competitions' %}" class="btn-submit navig">К списку соревнований</a>

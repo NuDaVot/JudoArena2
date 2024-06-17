@@ -3,10 +3,6 @@ from pytils.translit import slugify
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import Group
 
-
-
-
-
 def unique_slugify(instance, slug):
     model = instance.__class__
     unique_slug = slugify(slug)

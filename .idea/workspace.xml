@@ -7,21 +7,18 @@
     <list default="true" id="c1ca1208-80be-4cbf-9776-3f169c85eeee" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/management/commands/populate_database.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/management/commands/populate_database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/static/AppArena/css/style2.css" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/static/AppArena/css/style2.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/add_competition.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/add_competition.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/category_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/category_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/choose_judges.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/choose_judges.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/competition_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/competition_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/competitions.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/competitions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/create_category.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/create_category.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/edit_meet.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/edit_meet.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/meets_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/meets_view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/templates/AppArena/suitable_participants.html" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/templates/AppArena/suitable_participants.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AppArena/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AppArena/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AppArena/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AppArena/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Всероссийские соревнования Памяти Героев Отечества.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Детская лига Локодзюдо серия В_жеребьевка.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Детская лига Локодзюдо серия В_итоги.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Детская лига Локодзюдо серия В_протокол_06.06.2024.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Курсовая Часть1 (2)3.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Курсовая Часть1 (2)3.docx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +62,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/nudan/PycharmProjects/JudoArena2/management&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/nudan/PycharmProjects/JudoArena2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,

@@ -23,7 +23,7 @@
             <a href="{% url 'show_competitions' %}" class="btn-submit">К списку соревнований</a>
             {% for c in request.user.groups.all %}
                 {% if c.name == "Секретарь" and comp.date_end >= today%}
-                    <a href="{% url 'choose_judges' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Судьи</a>
+                    <a href="{% url 'choose_judges' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Назначить судей</a>
                     <a href="{% url 'create_category' comp.slug %}" class="btn-submit navig "  style="margin-left: 0px">Добавить категорию</a>
                 {% endif %}
             {% endfor %}
@@ -37,11 +37,11 @@
                 {{ comp.date_event }}
             {% endif %}
         </p>
-        <p class="text_wrap margin-bottom">Организатор: {{ comp.organizer.user.last_name }} {{ comp.organizer.user.first_name|slice:":1" }}.
+        <p class="text_wrap margin-bottom">Главный судья: {{ comp.organizer.user.last_name }} {{ comp.organizer.user.first_name|slice:":1" }}.
             {{ comp.organizer.patronymic|slice:":1" }}.</p>
         <p class="text_wrap margin-bottom">Описание: {{ comp.description|linebreaks }} </p>
         <h3 class="margin-bottom" >Список судей</h3>
-        <ul class="margin-bottom" style="margin-left: 20px">
+        <ol class="margin-bottom" style="margin-left: 20px">
             {% for referee in referees %}
                 <li>
                     {{ referee.user.last_name }} {{ referee.user.first_name }} {{ referee.patronymic }}
@@ -52,7 +52,7 @@
             {% empty %}
                 <p>Нет судей для этого соревнования.</p>
             {% endfor %}
-        </ul>
+        </ol>
     </div>
     <div class="container_big container_fsb">
             <a href="{% url 'generate_pdf' comp.slug  %}" class="btn-submit">Сформировать документ</a>
