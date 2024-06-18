@@ -67,19 +67,19 @@ class SignUpForm(UserCreationForm):
 
         date_birth = self.cleaned_data.get('date_birth_participants')
         if date_birth and date_birth > timezone.now().date():
-            self.add_error('date_birth_participants', "Не верная дата рождения")
+            self.add_error('date_birth_participants', "Неверная дата рождения")
         if date_birth_participants and date_birth_participants > timezone.now().date() - timedelta(days=365 * 4):
-            self.add_error('date_birth_participants', "Не верная дата рождения")
+            self.add_error('date_birth_participants', "Неверная дата рождения")
 
         if date_birth_participants and date_birth_participants < timezone.now().date() - timedelta(days=365 * 120):
-            self.add_error('date_birth_participants', "Не верная дата рождения")
+            self.add_error('date_birth_participants', "Неверная дата рождения")
 
         if weight_participants is not None:
             weight_float = Decimal(weight_participants)
             if weight_float < 25:
-                self.add_error('weight_participants', "Не верный вес")
+                self.add_error('weight_participants', "Неверный вес")
             if weight_float > 500:
-                self.add_error('weight_participants', "Не верный вес")
+                self.add_error('weight_participants', "Неверный вес")
 
         if role == '0' and not license_number_trainer:
             self.add_error('license_number_trainer', 'Поле "Лицензия" обязательно для тренера')
@@ -161,12 +161,12 @@ class AddCompetitionForm(forms.ModelForm):
         date_event = cleaned_data.get('date_event')
 
         if date_event and date_event < timezone.now().date():
-            self.add_error('date_event', "Не верная дата")
+            self.add_error('date_event', "Неверная дата")
 
         date_end = cleaned_data.get('date_end')
 
         if date_end and date_end < timezone.now().date():
-            self.add_error('date_end', "Не верная дата")
+            self.add_error('date_end', "Неверная дата")
     def __init__(self, *args, **kwargs):
         super(AddCompetitionForm, self).__init__(*args, **kwargs)
         self.fields['organizer'].empty_label = 'Выберите судью'
